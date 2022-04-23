@@ -1,5 +1,54 @@
 # CS_4900_FINAL
-  
+
+Repo for CS4900 Game Engine Design Final Project
+
+The Final project is a take on the traditional game "Labyrinth" featuring a ball and maze
+
+## Outline
+
+### Abstract
+We plan to create an improved version of the Labyrinth marble game. More info here. We aim
+to improve it by making it multiplayer. One player controls the maze board, and one or more
+other players each control a marble in the maze. The aim of the game is to get the marble(s)
+through the maze before time runs out (more players = more time). If you are playing as the
+board and all marbles are through the maze before time runs out, you win. As the marble, your
+job is to resist completing the maze until time runs out, if you are playing as the marble and you
+last the entire duration, you win (More than one marble may win). The game will ideally be
+playable for 2-5 players. These players will all be playing simultaneously. We have not decided if
+marble players should physically interact yet. If they don’t interact the other marbles will
+appear transparent.
+### Motivation
+We want to improve a single-player childhood game by adding a sense of competition through
+multiplayer and new objectives. The game could be easily extended to support more than 2-5
+players and different maps in the future. We think this project would also be a good way to dive
+a little deeper into what PhysX can do while making a game that is easy to play.
+### Methodology
+- We aim to complete this project by leveraging PhysX for the maze and marble interactions,
+gravity, basic control forces for the marble, and the detection of the marble after it has left the
+board. This should make the game feel real while adding some challenge. We will take your
+advice to move the camera and skybox rather than the board for simulating board movement.
+- We will most likely use “.stl” files for the models as they are supported by Assimp, are widely
+available, and are easy to edit. We will need models for the environment, and maybe marble if
+we want it to look fancy. We plan on pulling models from Thingiverse or another online
+repository of 3D models.
+- For communication between clients, we will use NetMsgs. We plan on having a NetMsg for
+board orientation and another for the marble’s position and forces applied. We may need an
+additional NetMsg for game status/time, and chatroom.
+- Additionally, we plan to use irrKlang for movement, timer, winning, and losing audio if time
+permits. We will collect audio clips for these sounds from YouTube’s audio library or another
+online audio repository. There will also be minimal GUI that will be done with imGUI. GUI would
+display a winner and loser, time clock, and controls.
+- Finally, we will generate the mazes for the game randomly. This will allow us to add variation to
+the game and keep it interesting. The mazes will use PhysX to interact with objects and some
+other features
+
+## To-do List
+- get models in and physx working
+- get netmsgs working
+- get basic gui with timer working
+
+
+## My idea for a movie
 According to all known laws
 of aviation,
 
