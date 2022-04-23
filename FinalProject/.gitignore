@@ -1,0 +1,6 @@
+cwin64/
+clin/
+clin64/
+.vscode/
+build_linuxDbg/
+build_linuxRel/
