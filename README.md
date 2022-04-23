@@ -4,6 +4,13 @@ Repo for CS4900 Game Engine Design Final Project
 
 The Final project is a take on the traditional game "Labyrinth" featuring a ball and maze
 
+## Due Dates
+- All of these due dates were mentioned in a blackboard post on 3/29/22
+
+Final Code Submission - 4/27/22<br>
+Final Report - 4/28/22<br>
+Final Video - 4/29/22
+
 ## Outline
 
 ### Abstract
