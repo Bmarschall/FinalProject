@@ -2,7 +2,7 @@
 #Running "cmake ../src -LAH" from command line will list all CMake Variables. This is useful
 #for extending and debugging CMake scripts.
 cmake_minimum_required(VERSION 3.3.0 FATAL_ERROR)
-PROJECT( "FinalProject" ) #This command populates CMAKE_SIZEOF_VOID_P and should be one of the first commands in the file
+PROJECT( "NewModule" ) #This command populates CMAKE_SIZEOF_VOID_P and should be one of the first commands in the file
 set_property( DIRECTORY PROPERTY VS_STARTUP_PROJECT "${PROJECT_NAME}" )
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 INCLUDE( CMakePackageConfigHelpers )
@@ -81,8 +81,10 @@ endif()
 #This section is already populated with default values from: ../../../include/cmake/aftrModuleCommonProjectIncludesAndLibs.cmake
 IF( WIN32 ) #MSVC Compiler library paths
    TARGET_LINK_LIBRARIES( ${PROJECT_NAME} PRIVATE
-                #optimized "${AFTR_USERLAND_LIB_PATH}/mySampleLibraryNeededInThisModule.lib"
-                #    debug "${AFTR_USERLAND_LIB_PATH}/mySampleLibraryNeededInThisModule_debug.lib"
+                optimized "${AFTR_USERLAND_LIB_PATH}/irrKlang/irrKlang.lib"
+                    debug "${AFTR_USERLAND_LIB_PATH}/irrKlang/irrKlang.lib"
+               optimized "${AFTR_USERLAND_LIB_PATH}/release/*.lib"
+                    debug "${AFTR_USERLAND_LIB_PATH}/debug/*.lib"
                 #optimized "${CMAKE_SOURCE_DIR}/lib${AFTR_NBITS}/myLocalLib.lib" #Located in ../lib64/ or ../lib32/
                 #    debug "${CMAKE_SOURCE_DIR}/lib${AFTR_NBITS}/myLocalLib.lib"
                          )
@@ -102,7 +104,9 @@ ENDIF()
 #This section is already populated with default values from: ../../../include/cmake/aftrModuleCommonProjectIncludesAndLibs.cmake
 #This can be made WIN32 or UNIX specific, depending on the platform, if desired.
 TARGET_INCLUDE_DIRECTORIES( ${PROJECT_NAME} PRIVATE 
-                           #"${AFTR_USR_INCLUDE_DIR}"
+                           "${AFTR_USR_INCLUDE_DIR}/../irrklang/"
+                           "${AFTR_USR_INCLUDE_DIR}/../physx/"
+                           "${AFTR_USR_INCLUDE_DIR}/../pxshared/"
                            #"${CMAKE_SOURCE_DIR}/../my3rdPartyLib/include/"
                           )
 

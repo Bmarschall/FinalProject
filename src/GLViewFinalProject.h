@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GLView.h"
+#include "PxPhysicsAPI.h"
 
 namespace Aftr
 {
@@ -32,6 +33,17 @@ public:
    virtual void onMouseMove( const SDL_MouseMotionEvent& e );
    virtual void onKeyDown( const SDL_KeyboardEvent& key );
    virtual void onKeyUp( const SDL_KeyboardEvent& key );
+
+
+   
+    //Physics Stuff
+    physx::PxDefaultAllocator a;
+    physx::PxDefaultErrorCallback e;
+    physx::PxFoundation* f;
+    physx::PxPhysics* p;
+    physx::PxScene* scene;
+
+   
 
 protected:
    GLViewFinalProject( const std::vector< std::string >& args );

@@ -33,6 +33,8 @@
 #include "WOImGui.h" //GUI Demos also need to #include "AftrImGuiIncludes.h"
 #include "AftrImGuiIncludes.h"
 #include "AftrGLRendererBase.h"
+#include "PxPhysicsAPI.h"
+#include "WOphysx.h"
 
 using namespace Aftr;
 
@@ -57,6 +59,18 @@ GLViewFinalProject::GLViewFinalProject( const std::vector< std::string >& args )
    //    calls GLView::onCreate()
 
    //GLViewFinalProject::onCreate() is invoked after this module's LoadMap() is completed.
+   
+   //Physics Dec
+    {
+        f = PxCreateFoundation(PX_PHYSICS_VERSION, a, e);
+        p = PxCreatePhysics(PX_PHYSICS_VERSION, *f, PxTolerancesScale(), false, NULL);
+        PxSceneDesc sc(p->getTolerancesScale());
+        sc.filterShader = physx::PxDefaultSimulationFilterShader;
+        sc.cpuDispatcher = physx::PxDefaultCpuDispatcherCreate(2);
+        scene = p->createScene(sc);
+        scene->setFlag(PxSceneFlag::eENABLE_ACTIVE_ACTORS, true);
+        scene->setGravity(PxVec3(0.0, 0.0, -9.81));
+    }
 }
 
 void GLViewFinalProject::onCreate(){
@@ -79,6 +93,35 @@ void GLViewFinalProject::updateWorld() {
    GLView::updateWorld(); //Just call the parent's update world first.
                           //If you want to add additional functionality, do it after
                           //this call.
+
+   //Physics Simulation
+   {
+       scene->simulate(1.0f / 60.0f);
+
+       PxU32 errorState = 0;
+       scene->fetchResults(true);
+
+       {
+           physx::PxU32 numActors = 0;
+           physx::PxActor** actors = scene->getActiveActors(numActors);
+           //make sure you set physx::PxSceneFlag::eENABLE_ACTIVE_ACTORS, true in your scene!
+           //poses that have changed since the last update (scene->setFlag)
+           //std::cout << numActors << std::endl;
+           for (physx::PxU32 i = 0; i < numActors; ++i)
+           {
+               physx::PxActor* actor = actors[i];
+               if (actor->userData != NULL)
+               {
+                   WOphysx* wo = static_cast<WOphysx*>(actor->userData);
+                   //at some point earlier the actor?s userdata was set to the corresponding WO?s pointer
+                   std::cout << "calling Physics Update" << std::endl;
+                   wo->updatePoseFromPhysicsEngine(actor);//add this function to your inherited class
+               }
+               else { std::cout << "Warn:: No Assosiated WO with actor" << i << std::endl; }
+               //make sure it has the information it needs, either the actor or just the pose
+           }
+       }
+   }
 }
 
 void GLViewFinalProject::onResizeWindow( GLsizei width, GLsizei height ){ GLView::onResizeWindow( width, height ); }
@@ -108,10 +151,11 @@ void Aftr::GLViewFinalProject::loadMap(){
    this->cam->setCameraLookAtPoint({ 0,0,0 });
 
    std::string shinyRedPlasticCube( ManagerEnvironmentConfiguration::getSMM() + "/models/cube4x4x4redShinyPlastic_pp.wrl" );
+   std::string sphere(ManagerEnvironmentConfiguration::getSMM() + "/models/sphereR5Earth.wrl");
    std::string wheeledCar( ManagerEnvironmentConfiguration::getSMM() + "/models/rcx_treads.wrl" );
    std::string grass( ManagerEnvironmentConfiguration::getSMM() + "/models/grassFloor400x400_pp.wrl" );
    std::string human( ManagerEnvironmentConfiguration::getSMM() + "/models/human_chest.wrl" );
-   std::string maze(ManagerEnvironmentConfiguration::getSMM() + "/models/maze.stl");
+   std::string maze(ManagerEnvironmentConfiguration::getLMM() + "/models/maze.stl");
 
    //std::string tableTexture(ManagerEnvironmentConfiguration::getLMM() + "models/table.jpg");
    
@@ -177,6 +221,20 @@ void Aftr::GLViewFinalProject::loadMap(){
       wo->renderOrderType = RENDER_ORDER_TYPE::roOPAQUE;
       wo->setLabel( "Maze" );
       worldLst->push_back( wo );
+   }
+   {
+       //Create A Physics Plane
+       physx::PxMaterial* gMaterial = p->createMaterial(0.5f, 0.5f, 0.6f);
+       PxRigidStatic* groundPlane = PxCreatePlane(*p, PxPlane(0, 0, 1, 0), *gMaterial);
+       scene->addActor(*groundPlane);
+   }
+   {
+       WOphysx* wo = WOphysx::New(sphere, Vector(1, 1, 1), MESH_SHADING_TYPE::mstFLAT, p, scene,"s");
+       wo->setPosition(Vector(0, 0.0f, 10));
+       wo->renderOrderType = RENDER_ORDER_TYPE::roOPAQUE;
+       wo->setLabel("Grass");
+
+       worldLst->push_back(wo);
    }
    
    //Make a Dear Im Gui instance via the WOImGui in the engine... This calls

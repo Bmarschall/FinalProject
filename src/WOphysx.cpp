@@ -9,10 +9,19 @@ namespace Aftr{
 		this->a->setGlobalPose(t);
 	}
 
-	void WOphysx::onCreate(const std::string& path, const Vector& scale, Aftr::MESH_SHADING_TYPE mst, PxPhysics* p){
+	void WOphysx::onCreate(const std::string& path, const Vector& scale, Aftr::MESH_SHADING_TYPE mst, PxPhysics* p, std::string physxInfo){
 		WO::onCreate(path, scale, mst);
 		physx::PxMaterial* gMaterial = p->createMaterial(0.5f, 0.5f, 0.6f);
-		PxShape* shape = p->createShape(PxBoxGeometry(2, 2, 2), *gMaterial, true);
+		PxShape* shape = p->createShape(PxSphereGeometry(scale[0]*2), *gMaterial, true);
+		
+		if (physxInfo == "s")
+		{
+			shape = p->createShape(PxSphereGeometry(scale[0]*5), *gMaterial, true);
+		}
+		else
+		{
+			shape = p->createShape(PxBoxGeometry(scale[0]*2, scale[1]*2, scale[2]*2), *gMaterial, true);
+		}
 		PxTransform t({ 0,0,0 });
 		PxRigidDynamic* a = p->createRigidDynamic(t);
 		a->attachShape(*shape);
@@ -45,9 +54,9 @@ namespace Aftr{
 		}
 	}
 
-	WOphysx* WOphysx::New(const std::string& modelFileName, const Vector& scale , MESH_SHADING_TYPE shadingType , physx::PxPhysics* p, PxScene* s){
+	WOphysx* WOphysx::New(const std::string& modelFileName, const Vector& scale , MESH_SHADING_TYPE shadingType , physx::PxPhysics* p, PxScene* s, std::string physxInfo){
 		WOphysx* wo = new WOphysx(s);
-		wo->onCreate(modelFileName, scale, shadingType, p);
+		wo->onCreate(modelFileName, scale, shadingType, p,physxInfo);
 		return wo;
 	}
 

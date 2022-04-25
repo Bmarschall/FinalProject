@@ -14,7 +14,7 @@ namespace Aftr {
 
         static WOphysx* New();
         static WOphysx* New(const std::string& modelFileName, const Vector& scale = Vector(1, 1, 1), MESH_SHADING_TYPE shadingType = MESH_SHADING_TYPE::mstAUTO);
-        static WOphysx* New(const std::string& modelFileName, const Vector& scale = Vector(1, 1, 1), MESH_SHADING_TYPE shadingType = MESH_SHADING_TYPE::mstAUTO, physx::PxPhysics* p = NULL, PxScene* s = NULL);
+        static WOphysx* New(const std::string& modelFileName, const Vector& scale = Vector(1, 1, 1), MESH_SHADING_TYPE shadingType = MESH_SHADING_TYPE::mstAUTO, physx::PxPhysics* p = NULL, PxScene* s = NULL, std::string physxInfo = "");
 
         virtual ~WOphysx();
         void setPosition(Vector vec);
@@ -22,7 +22,7 @@ namespace Aftr {
         void addForce(PxVec3 force);
     protected:
         WOphysx(PxScene* scene);
-        virtual void onCreate(const std::string& path, const Vector& scale, Aftr::MESH_SHADING_TYPE mst, PxPhysics* p);
+        virtual void onCreate(const std::string& path, const Vector& scale, Aftr::MESH_SHADING_TYPE mst, PxPhysics* p, std::string physxInfo);
 
     };
 }
