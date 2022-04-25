@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GLView.h"
+#include "PxPhysicsAPI.h"
 
 namespace Aftr
 {
@@ -43,6 +44,13 @@ public:
    bool aPressed = false;
     bool sPressed = false;
     bool dPressed = false;
+
+    //Physics Stuff
+    physx::PxDefaultAllocator a;
+    physx::PxDefaultErrorCallback e;
+    physx::PxFoundation* f;
+    physx::PxPhysics* p;
+    physx::PxScene* scene;
 
 protected:
    GLViewFinalProject( const std::vector< std::string >& args );
