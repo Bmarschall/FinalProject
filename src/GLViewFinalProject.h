@@ -33,6 +33,17 @@ public:
    virtual void onKeyDown( const SDL_KeyboardEvent& key );
    virtual void onKeyUp( const SDL_KeyboardEvent& key );
 
+   WO* skybox;
+   WO* table;
+   float pitchX = 0.0f;
+   float pitchY = 0.0f;
+   float pitchZ = 0.0f;
+
+   bool wPressed = false;
+   bool aPressed = false;
+    bool sPressed = false;
+    bool dPressed = false;
+
 protected:
    GLViewFinalProject( const std::vector< std::string >& args );
    virtual void onCreate();   

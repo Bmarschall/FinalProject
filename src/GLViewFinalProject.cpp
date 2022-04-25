@@ -35,6 +35,8 @@
 #include "AftrGLRendererBase.h"
 
 using namespace Aftr;
+const int MAX_TILT = 15; // max board tilt in degrees
+const float TILT_SPEED = 1;
 
 GLViewFinalProject* GLViewFinalProject::New( const std::vector< std::string >& args ){
    GLViewFinalProject* glv = new GLViewFinalProject( args );
@@ -79,18 +81,85 @@ void GLViewFinalProject::updateWorld() {
    GLView::updateWorld(); //Just call the parent's update world first.
                           //If you want to add additional functionality, do it after
                           //this call.
+
+   if (this->wPressed) {
+       if (this->pitchX > -MAX_TILT) {
+           this->pitchX -= TILT_SPEED;
+           this->table->rotateAboutRelX(-TILT_SPEED * DEGtoRAD);
+           this->skybox->rotateAboutRelX(-TILT_SPEED * DEGtoRAD);
+       }
+   }
+
+   if (this->aPressed) {
+       if (this->pitchY > -MAX_TILT) {
+           this->pitchY -= TILT_SPEED;
+           this->table->rotateAboutRelY(-TILT_SPEED * DEGtoRAD);
+           this->skybox->rotateAboutRelY(-TILT_SPEED * DEGtoRAD);
+       }
+   }
+
+   if (this->sPressed) {
+       if (this->pitchX < MAX_TILT) {
+           this->pitchX += TILT_SPEED;
+           this->table->rotateAboutRelX(TILT_SPEED * DEGtoRAD);
+           this->skybox->rotateAboutRelX(TILT_SPEED * DEGtoRAD);
+       }
+   }
+
+   if (this->dPressed) {
+       if (this->pitchY < MAX_TILT) {
+           this->pitchY += TILT_SPEED;
+           this->table->rotateAboutRelY(TILT_SPEED * DEGtoRAD);
+           this->skybox->rotateAboutRelY(TILT_SPEED * DEGtoRAD);
+       }
+   }
+
+   if (
+       this->wPressed == false &&
+       this->aPressed == false &&
+       this->sPressed == false &&
+       this->dPressed == false
+       ) {
+       this->pitchX = this->pitchX + (0.0 - this->pitchX) * 0.03;
+       this->pitchY = this->pitchY + (0.0 - this->pitchY) * 0.03;
+       this->pitchZ = this->pitchZ + (0.0 - this->pitchZ) * 0.03;
+
+       this->table->rotateToIdentity();
+       this->skybox->rotateToIdentity();
+       this->table->rotateAboutRelX(this->pitchX * DEGtoRAD);
+       this->skybox->rotateAboutRelX(this->pitchX * DEGtoRAD);
+       this->table->rotateAboutRelY(this->pitchY * DEGtoRAD);
+       this->skybox->rotateAboutRelY(this->pitchY * DEGtoRAD);
+       this->table->rotateAboutRelY(this->pitchZ * DEGtoRAD);
+       this->skybox->rotateAboutRelY(this->pitchZ * DEGtoRAD);
+   }
+
 }
 
 void GLViewFinalProject::onResizeWindow( GLsizei width, GLsizei height ){ GLView::onResizeWindow( width, height ); }
 void GLViewFinalProject::onMouseDown( const SDL_MouseButtonEvent& e ){ GLView::onMouseDown( e ); }
 void GLViewFinalProject::onMouseUp(const SDL_MouseButtonEvent& e) { GLView::onMouseUp(e); }
 void GLViewFinalProject::onMouseMove( const SDL_MouseMotionEvent& e ){ GLView::onMouseMove( e ); }
-void GLViewFinalProject::onKeyUp(const SDL_KeyboardEvent& key) { GLView::onKeyUp(key); }
+void GLViewFinalProject::onKeyUp(const SDL_KeyboardEvent& key) { 
+    GLView::onKeyUp(key); 
+    if (key.keysym.sym == SDLK_a) { this->aPressed = false; }
+    if (key.keysym.sym == SDLK_d) { this->dPressed = false; }
+    if (key.keysym.sym == SDLK_w) { this->wPressed = false; }
+    if (key.keysym.sym == SDLK_s) { this->sPressed = false; }
+
+}
+
 void GLViewFinalProject::onKeyDown( const SDL_KeyboardEvent& key ){
    GLView::onKeyDown( key );
    if( key.keysym.sym == SDLK_0 )
       this->setNumPhysicsStepsPerRender( 1 );
    if( key.keysym.sym == SDLK_1 ){}
+
+   // WASD CONTROLS
+   if (key.keysym.sym == SDLK_a) { this->aPressed = true; }
+   if (key.keysym.sym == SDLK_d) { this->dPressed = true; }
+   if (key.keysym.sym == SDLK_w) { this->wPressed = true; }
+   if (key.keysym.sym == SDLK_s) { this->sPressed = true; }
 }
 
 void Aftr::GLViewFinalProject::loadMap(){
@@ -140,6 +209,7 @@ void Aftr::GLViewFinalProject::loadMap(){
       wo->setLabel( "Sky Box" );
       wo->renderOrderType = RENDER_ORDER_TYPE::roOPAQUE;
       worldLst->push_back( wo );
+      this->skybox = wo;
    }
 
    { 
@@ -167,6 +237,8 @@ void Aftr::GLViewFinalProject::loadMap(){
           } );
       wo->setLabel( "Table" );
       worldLst->push_back( wo );
+
+      this->table = wo;
    }
 
    {
