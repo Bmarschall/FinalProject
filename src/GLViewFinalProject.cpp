@@ -35,10 +35,15 @@
 #include "AftrGLRendererBase.h"
 #include "PxPhysicsAPI.h"
 #include "WOphysx.h"
+#include "irrKlang.h"
+#include "Gooey.h"
+#include "Model.h"
+
+using namespace std;
 
 using namespace Aftr;
-const int MAX_TILT = 15; // max board tilt in degrees
-const float TILT_SPEED = 1;
+float MAX_TILT = 15; // max board tilt in degrees
+float TILT_SPEED = 1;
 
 GLViewFinalProject* GLViewFinalProject::New( const std::vector< std::string >& args ){
    GLViewFinalProject* glv = new GLViewFinalProject( args );
@@ -73,6 +78,7 @@ GLViewFinalProject::GLViewFinalProject( const std::vector< std::string >& args )
         scene->setFlag(PxSceneFlag::eENABLE_ACTIVE_ACTORS, true);
         scene->setGravity(PxVec3(0.0, 0.0, -9.81));
     }
+    doSound();
 }
 
 void GLViewFinalProject::onCreate(){
@@ -95,6 +101,13 @@ void GLViewFinalProject::updateWorld() {
    GLView::updateWorld(); //Just call the parent's update world first.
                           //If you want to add additional functionality, do it after
                           //this call.
+
+   soundUpdate();
+   ballUpdate();
+
+   MAX_TILT = gui->MAX_TILT;
+   TILT_SPEED = gui->TILT_SPEED;
+   scene->setGravity(PxVec3(gui->XGravity, gui->YGravity, gui->Gravity));
 
    if (this->wPressed) {
        if (this->pitchX > -MAX_TILT) {
@@ -168,14 +181,19 @@ void GLViewFinalProject::updateWorld() {
                {
                    WOphysx* wo = static_cast<WOphysx*>(actor->userData);
                    //at some point earlier the actor?s userdata was set to the corresponding WO?s pointer
-                   std::cout << "calling Physics Update" << std::endl;
+                   //std::cout << "calling Physics Update" << std::endl;
                    wo->updatePoseFromPhysicsEngine(actor);//add this function to your inherited class
                }
-               else { std::cout << "Warn:: No Assosiated WO with actor" << i << std::endl; }
+               //else { std::cout << "Warn:: No Assosiated WO with actor" << i << std::endl; }
                //make sure it has the information it needs, either the actor or just the pose
            }
        }
    }
+
+   //gui->Gravity = this->pitchZ * DEGtoRAD;
+   gui->YGravity = -1 * (this->pitchX * DEGtoRAD) * gui->rollMult;
+   gui->XGravity = (this->pitchY * DEGtoRAD) * gui->rollMult;//fix on of these
+
 }
 
 void GLViewFinalProject::onResizeWindow( GLsizei width, GLsizei height ){ GLView::onResizeWindow( width, height ); }
@@ -243,7 +261,7 @@ void Aftr::GLViewFinalProject::loadMap(){
 
    //SkyBox Textures readily available
    std::vector< std::string > skyBoxImageNames; //vector to store texture paths
-   skyBoxImageNames.push_back(ManagerEnvironmentConfiguration::getSMM() + "/images/skyboxes/room.jpg");
+   skyBoxImageNames.push_back(ManagerEnvironmentConfiguration::getLMM() + "skyboxes/room.jpg");
 
    {
       //Create the SkyBox
@@ -284,46 +302,102 @@ void Aftr::GLViewFinalProject::loadMap(){
       this->table = wo;
    }
 
+   //{
+   //   // maze object
+   //   WO* wo = WO::New(maze, Vector( 1, 1, 1 ), MESH_SHADING_TYPE::mstFLAT );
+   //   wo->setPosition( Vector( 0, 0, 50.0f ) );
+   //   wo->rotateAboutRelX(-90 * DEGtoRAD);
+   //   wo->renderOrderType = RENDER_ORDER_TYPE::roOPAQUE;
+   //   wo->setLabel( "Maze" );
+   //   worldLst->push_back( wo );
+
+   //   size_t VertexListSize = wo->getModel()->getModelDataShared()->getCompositeVertexList().at(0).x;
+
+
+   //   //vector<Aftr::Vector, allocator <Aftr::Vector>> vertexList = wo->getModel()->getCompositeVertexList();
+   //   //vector<unsigned int, allocator<unsigned int>> indexList = wo->getModel()->getCompositeIndexList();
+
+   //   ////float* vertexListCopy = new float[vertexList.size() * 3];
+   //   ////size_t i = 0;
+   //   ////for  (auto &v : vertexList)
+   //   ////{
+   //   ////    
+   //   ////    vertexListCopy[i *3 + 0] = v[0];
+   //   ////    vertexListCopy[i *3 + 1] = v[1];
+   //   ////    vertexListCopy[i *3 + 2] = v[2];
+   //   ////    i++;
+   //   ////}
+
+   //   //unsigned int* indexListCopy = new unsigned int[indexList.size()];
+   //   ////i = 0;
+
+   //   ////for (int j =0; j < indexList.size(); j++)
+   //   ////{
+   //   ////    indexListCopy[i] = indexList[j];
+   //   ////    /*cout << "******************************************";
+   //   ////    cout << indexList[j];*/
+   //   ////    i++;
+   //   ////}
+
+   //   //physx::PxTriangleMeshDesc meshDesc;
+   //   //
+   //   //meshDesc.points.count = vertexList.size();
+   //   //meshDesc.points.stride = 3 * sizeof(float) * 3;
+   //   //meshDesc.points.data = vertexListCopy;
+
+   //}
+
+
    {
       // maze object
-      WO* wo = WO::New(maze, Vector( 1, 1, 1 ), MESH_SHADING_TYPE::mstFLAT );
-      wo->setPosition( Vector( 0, 0, 50.0f ) );
-      wo->rotateAboutRelX(-90 * DEGtoRAD);
+      WOphysx* wo = WOphysx::New(maze, Vector( 1, 1, 1 ), MESH_SHADING_TYPE::mstFLAT,p,scene,"t",f);
+
+      wo->upon_async_model_loaded([wo]()
+          {
+              wo->setPosition(Vector(0, 0, 40));
+              wo->rotateAboutRelX(-90 * DEGtoRAD);
+          });
+      
       wo->renderOrderType = RENDER_ORDER_TYPE::roOPAQUE;
       wo->setLabel( "Maze" );
       worldLst->push_back( wo );
-   }
-   {
-       //Create A Physics Plane
-       physx::PxMaterial* gMaterial = p->createMaterial(0.5f, 0.5f, 0.6f);
-       PxRigidStatic* groundPlane = PxCreatePlane(*p, PxPlane(0, 0, 1, 0), *gMaterial);
-       scene->addActor(*groundPlane);
-   }
-   {
-       WOphysx* wo = WOphysx::New(sphere, Vector(1, 1, 1), MESH_SHADING_TYPE::mstFLAT, p, scene,"s");
-       wo->setPosition(Vector(0, 0.0f, 10));
-       wo->renderOrderType = RENDER_ORDER_TYPE::roOPAQUE;
-       wo->setLabel("Grass");
 
-       worldLst->push_back(wo);
+      this->maze = wo;
+   }
+
+   {
+       ball = WOphysx::New(sphere, Vector(1, 1, 1), MESH_SHADING_TYPE::mstFLAT, p, scene,"s",f);
+       ball->setPosition(Vector(0, 0.0f, 100));
+       ball->renderOrderType = RENDER_ORDER_TYPE::roOPAQUE;
+       ball->setLabel("Grass");
+       //std::cout << "BALL INFO SIZE = " << ball->getModel()->getModelDataShared()->getCompositeVertexList().size() << std::endl;
+       worldLst->push_back(ball);
+   }
+   {
+       ////Create A Physics Plane
+       //physx::PxMaterial* gMaterial = p->createMaterial(0.5f, 0.5f, 0.6f);
+       //PxRigidStatic* groundPlane = PxCreatePlane(*p, PxPlane(0, 0, 1, 0), *gMaterial);
+       //scene->addActor(*groundPlane);
    }
    
-   //Make a Dear Im Gui instance via the WOImGui in the engine... This calls
-   //the default Dear ImGui demo that shows all the features... To create your own,
-   //inherit from WOImGui and override WOImGui::drawImGui_for_this_frame(...) (among any others you need).
-   //WOImGui* gui = WOImGui::New( nullptr );
-   //gui->setLabel( "My Gui" );
-   //gui->subscribe_drawImGuiWidget(
-   //   [this, gui]() //this is a lambda, the capture clause is in [], the input argument list is in (), and the body is in {}
-   //   {
-   //      ImGui::ShowDemoWindow(); //Displays the default ImGui demo from C:/repos/aburn/engine/src/imgui_implot/implot_demo.cpp
-   //      WOImGui::draw_AftrImGui_Demo( gui ); //Displays a small Aftr Demo from C:/repos/aburn/engine/src/aftr/WOImGui.cpp
-   //      ImPlot::ShowDemoWindow(); //Displays the ImPlot demo using ImGui from C:/repos/aburn/engine/src/imgui_implot/implot_demo.cpp
-   //   } );
-   //this->worldLst->push_back( gui );
+   Gooey* goo = Gooey::New(nullptr);
+   goo->setLabel("Goo");
+   goo->subscribe_drawImGuiWidget(
+       [this, goo]() //this is a lambda, the capture clause is in [], the input argument list is in (), and the body is in {}
+       {
+           //ImGui::ShowDemoWindow(); //Displays the default ImGui demo from C:/repos/aburn/engine/src/imgui_implot/implot_demo.cpp
+           Gooey::draw_gui(goo); //Displays a small Aftr Demo from C:/repos/aburn/engine/src/aftr/WOImGui.cpp
+           //ImPlot::ShowDemoWindow(); //Displays the ImPlot demo using ImGui from C:/repos/aburn/engine/src/imgui_implot/implot_demo.cpp
+       });
+   this->worldLst->push_back(goo);
+
+   gui = goo;
+
 
    createFinalProjectWayPoints();
 }
+
+
 
 void GLViewFinalProject::createFinalProjectWayPoints(){
     // Create a waypoint with a radius of 3, a frequency of 5 seconds, activated by GLView's camera, and is visible.
@@ -334,4 +408,90 @@ void GLViewFinalProject::createFinalProjectWayPoints(){
     WOWayPointSpherical* wayPt = WOWayPointSpherical::New(params, 3);
     wayPt->setPosition(Vector(50, 0, 3));
     worldLst->push_back(wayPt);
+}
+
+void GLViewFinalProject::doSound() {
+
+    twoDim = irrklang::createIrrKlangDevice();
+    std::string filename(ManagerEnvironmentConfiguration::getLMM() + "Cool.wav");
+    twoDimSoundSource = twoDim->addSoundSourceFromFile(filename.c_str());
+    twoDimSound = twoDim->play2D(twoDimSoundSource, true, true, true, false);
+
+    threeDim = irrklang::createIrrKlangDevice();
+    std::string filename3(ManagerEnvironmentConfiguration::getLMM() + "ball_roll.mp3");
+    threeDimSoundSource = threeDim->addSoundSourceFromFile(filename3.c_str());
+    threeDimSound = threeDim->play3D(threeDimSoundSource, vec3df(0, 0, 0), true, true, true, false);
+
+}
+
+void GLViewFinalProject::soundUpdate() {
+    twoDim->setSoundVolume(gui->get_2d_volume());
+
+    Vector pos = ball->getPosition();
+    vec3df cubePosition = { pos[0], pos[1], pos[2] };
+
+    Vector camPos = cam->getPosition();
+    vec3df cameraPosition = { camPos[0], camPos[1], camPos[2] };
+
+    Vector lookDir = cam->getLookDirection();
+    vec3df cameraLookDirection = { lookDir[0], lookDir[1], lookDir[2] };
+
+    threeDim->setListenerPosition(cameraPosition, cameraLookDirection);
+
+    threeDimSound->setPosition(cubePosition);
+
+    gui->volume3 = 1 / (ball->getForce());
+
+    if (gui->is3d) {
+        threeDimSound->setIsPaused(false);
+        gui->is3d = false;
+    }
+    if (gui->is2d) {
+        twoDimSound->setIsPaused(false);
+        gui->is2d = false;
+    }
+
+    //Pause
+
+    if (gui->pause2d)
+    {
+        if (twoDimSound->getIsPaused())
+        {
+            twoDimSound->setIsPaused(false);
+        }
+        else {
+            twoDimSound->setIsPaused(true);
+        }
+        gui->pause2d = false;
+    }
+
+    if (gui->pause3d)
+    {
+        if (threeDimSound->getIsPaused())
+        {
+            threeDimSound->setIsPaused(false);
+        }
+        else {
+            threeDimSound->setIsPaused(true);
+        }
+        gui->pause3d = false;
+    }
+
+}
+
+void GLViewFinalProject::ballUpdate() {
+
+
+    if (gui-> dropBall)
+    {
+        ball->setPosition(Vector(0, 0.0f, gui->dropBallHeight));
+        gui->dropBall = false;
+    }
+
+    if (gui-> resetBall)
+    {
+        ball->stopForce();
+        ball->setPosition(Vector(0, 0.0f, 10.0f));//update with maze object implementation
+        gui->resetBall = false;
+    }
 }

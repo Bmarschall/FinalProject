@@ -4,3 +4,4 @@ clin64/
 .vscode/
 build_linuxDbg/
 build_linuxRel/
+src/CMakeLists.txt

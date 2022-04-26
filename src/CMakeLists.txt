@@ -83,6 +83,8 @@ IF( WIN32 ) #MSVC Compiler library paths
    TARGET_LINK_LIBRARIES( ${PROJECT_NAME} PRIVATE
                optimized "${AFTR_USERLAND_LIB_PATH}/release/*.lib"
                     debug "${AFTR_USERLAND_LIB_PATH}/debug/*.lib"
+               optimized "${AFTR_USERLAND_LIB_PATH}/irrKlang/*.lib"
+                    debug "${AFTR_USERLAND_LIB_PATH}/irrKlang/*.lib"
                 #optimized "${CMAKE_SOURCE_DIR}/lib${AFTR_NBITS}/myLocalLib.lib" #Located in ../lib64/ or ../lib32/
                 #    debug "${CMAKE_SOURCE_DIR}/lib${AFTR_NBITS}/myLocalLib.lib"
                          )
