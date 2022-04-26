@@ -45,6 +45,8 @@ public:
 
    WO* skybox;
    WO* table;
+   WO* maze;
+
    float pitchX = 0.0f;
    float pitchY = 0.0f;
    float pitchZ = 0.0f;

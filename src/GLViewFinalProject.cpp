@@ -348,11 +348,17 @@ void Aftr::GLViewFinalProject::loadMap(){
 
 
    {
-       physx::PxMaterial* gMaterial = p->createMaterial(0.5f, 0.5f, 0.6f);
-       PxRigidStatic* square = PxCreatePlane(*p, PxPlane(0, 0, 1, 0), *gMaterial);
-       scene->addActor(*square);
+      // maze object
+      WO* wo = WO::New(maze, Vector( 1, 1, 1 ), MESH_SHADING_TYPE::mstFLAT );
+      wo->setPosition( Vector( 0, 0, 50.0f ) );
+      wo->rotateAboutRelX(-90 * DEGtoRAD);
+      wo->renderOrderType = RENDER_ORDER_TYPE::roOPAQUE;
+      wo->setLabel( "Maze" );
+      worldLst->push_back( wo );
 
+      this->maze = wo;
    }
+
    {
        //Create A Physics Plane
        physx::PxMaterial* gMaterial = p->createMaterial(0.5f, 0.5f, 0.6f);
