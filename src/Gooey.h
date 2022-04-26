@@ -30,6 +30,25 @@ namespace Aftr {
         virtual void drawImGui_for_this_frame(){
             ImGui::Begin("Tilta-whirl O'Matic 5000");
 
+
+
+            ImGui::BeginMainMenuBar();
+
+            ImGui::Text("                                       ");
+
+            float time = 60 - ImGui::GetTime();
+
+            if (time > 0) {
+
+                ImGui::SliderFloat("Time", &time, 60, 0);
+
+            }
+            else {
+                ImGui::Text("Game Over");
+            }
+
+            ImGui::EndMainMenuBar();
+
             //ImGui::Text("Relative Rotation");
             //ImGui::SliderFloat("Relative X", &r[0], -90.0f, 90.0f);
             //ImGui::SliderFloat("Relative Y", &r[1], -90.0f, 90.0f);
@@ -65,7 +84,6 @@ namespace Aftr {
             if (ImGui::Button("Pause")) {
                 pause3d = true;
             }
-            ImGui::SliderFloat("3d Volume", &volume3, 0.0f, 2.0f);
 
             ImGui::Separator();
             ImGui::SliderFloat("MAX_TILT", &MAX_TILT, 0.0f, 20.0f);
@@ -84,12 +102,22 @@ namespace Aftr {
                 resetBall = true;
             }
 
-            if (ImGui::Button("Drop Ball")) {
-                dropBall = true;
-            }
-
 
             ImGui::SliderFloat("dropBallHeight", &dropBallHeight, 10.0f, 100.0f);
+
+            ImGui::Separator();
+
+
+            ImGui::Separator();
+
+
+            if (ImGui::Button("Game Win")) {
+                pause3d = true;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Game Lose")) {
+                pause3d = true;
+            }
 
 
 
