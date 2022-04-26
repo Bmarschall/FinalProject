@@ -145,11 +145,11 @@ namespace Aftr{
 
 	}
 	void WOphysx::stopForce() {
-		a->setLinearVelocity(PxVec3(0, 0, 0));
+		ad->setLinearVelocity(PxVec3(0, 0, 0));
 	}
 
 	float WOphysx::getForce() {
-		PxVec3 temp = a->getLinearVelocity();
+		PxVec3 temp = ad->getLinearVelocity();
 		int volume = 0;
 		for (size_t i = 0; i < 3; i++)
 		{

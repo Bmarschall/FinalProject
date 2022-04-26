@@ -191,8 +191,8 @@ void GLViewFinalProject::updateWorld() {
    }
 
    //gui->Gravity = this->pitchZ * DEGtoRAD;
-   gui->YGravity = -1 * (this->pitchX * DEGtoRAD) * gui->rollMult;
-   gui->XGravity = (this->pitchY * DEGtoRAD) * gui->rollMult;//fix on of these
+   gui->YGravity =  (this->pitchX * DEGtoRAD) * gui->rollMult;
+   gui->XGravity = -1*(this->pitchY * DEGtoRAD) * gui->rollMult;//fix on of these
 
 }
 
@@ -302,51 +302,6 @@ void Aftr::GLViewFinalProject::loadMap(){
       this->table = wo;
    }
 
-   //{
-   //   // maze object
-   //   WO* wo = WO::New(maze, Vector( 1, 1, 1 ), MESH_SHADING_TYPE::mstFLAT );
-   //   wo->setPosition( Vector( 0, 0, 50.0f ) );
-   //   wo->rotateAboutRelX(-90 * DEGtoRAD);
-   //   wo->renderOrderType = RENDER_ORDER_TYPE::roOPAQUE;
-   //   wo->setLabel( "Maze" );
-   //   worldLst->push_back( wo );
-
-   //   size_t VertexListSize = wo->getModel()->getModelDataShared()->getCompositeVertexList().at(0).x;
-
-
-   //   //vector<Aftr::Vector, allocator <Aftr::Vector>> vertexList = wo->getModel()->getCompositeVertexList();
-   //   //vector<unsigned int, allocator<unsigned int>> indexList = wo->getModel()->getCompositeIndexList();
-
-   //   ////float* vertexListCopy = new float[vertexList.size() * 3];
-   //   ////size_t i = 0;
-   //   ////for  (auto &v : vertexList)
-   //   ////{
-   //   ////    
-   //   ////    vertexListCopy[i *3 + 0] = v[0];
-   //   ////    vertexListCopy[i *3 + 1] = v[1];
-   //   ////    vertexListCopy[i *3 + 2] = v[2];
-   //   ////    i++;
-   //   ////}
-
-   //   //unsigned int* indexListCopy = new unsigned int[indexList.size()];
-   //   ////i = 0;
-
-   //   ////for (int j =0; j < indexList.size(); j++)
-   //   ////{
-   //   ////    indexListCopy[i] = indexList[j];
-   //   ////    /*cout << "******************************************";
-   //   ////    cout << indexList[j];*/
-   //   ////    i++;
-   //   ////}
-
-   //   //physx::PxTriangleMeshDesc meshDesc;
-   //   //
-   //   //meshDesc.points.count = vertexList.size();
-   //   //meshDesc.points.stride = 3 * sizeof(float) * 3;
-   //   //meshDesc.points.data = vertexListCopy;
-
-   //}
-
 
    {
       // maze object
@@ -366,7 +321,7 @@ void Aftr::GLViewFinalProject::loadMap(){
    }
 
    {
-       ball = WOphysx::New(sphere, Vector(1, 1, 1), MESH_SHADING_TYPE::mstFLAT, p, scene,"s",f);
+       ball = WOphysx::New(sphere, Vector(0.25, 0.25, 0.25), MESH_SHADING_TYPE::mstFLAT, p, scene,"s",f);
        ball->setPosition(Vector(0, 0.0f, 100));
        ball->renderOrderType = RENDER_ORDER_TYPE::roOPAQUE;
        ball->setLabel("Grass");
@@ -491,7 +446,7 @@ void GLViewFinalProject::ballUpdate() {
     if (gui-> resetBall)
     {
         ball->stopForce();
-        ball->setPosition(Vector(0, 0.0f, 10.0f));//update with maze object implementation
+        ball->setPosition(Vector(0, 0.0f, 80.0f));//update with maze object implementation
         gui->resetBall = false;
     }
 }
