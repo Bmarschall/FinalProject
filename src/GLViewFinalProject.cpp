@@ -38,6 +38,8 @@
 #include "irrKlang.h"
 #include "Gooey.h"
 
+using namespace std;
+
 using namespace Aftr;
 float MAX_TILT = 15; // max board tilt in degrees
 float TILT_SPEED = 1;
@@ -104,7 +106,7 @@ void GLViewFinalProject::updateWorld() {
 
    MAX_TILT = gui->MAX_TILT;
    TILT_SPEED = gui->TILT_SPEED;
-   scene->setGravity(PxVec3(0.0, 0.0, gui->Gravity));
+   scene->setGravity(PxVec3(gui->XGravity, gui->YGravity, gui->Gravity));
 
    if (this->wPressed) {
        if (this->pitchX > -MAX_TILT) {
@@ -186,6 +188,11 @@ void GLViewFinalProject::updateWorld() {
            }
        }
    }
+
+   //gui->Gravity = this->pitchZ * DEGtoRAD;
+   gui->YGravity = -1 * (this->pitchX * DEGtoRAD) * gui->rollMult;
+   gui->XGravity = (this->pitchY * DEGtoRAD) * gui->rollMult;//fix on of these
+
 }
 
 void GLViewFinalProject::onResizeWindow( GLsizei width, GLsizei height ){ GLView::onResizeWindow( width, height ); }
@@ -294,6 +301,52 @@ void Aftr::GLViewFinalProject::loadMap(){
       this->table = wo;
    }
 
+   //{
+   //   // maze object
+   //   WO* wo = WO::New(maze, Vector( 1, 1, 1 ), MESH_SHADING_TYPE::mstFLAT );
+   //   wo->setPosition( Vector( 0, 0, 50.0f ) );
+   //   wo->rotateAboutRelX(-90 * DEGtoRAD);
+   //   wo->renderOrderType = RENDER_ORDER_TYPE::roOPAQUE;
+   //   wo->setLabel( "Maze" );
+   //   worldLst->push_back( wo );
+
+   //   size_t VertexListSize = wo->getModel()->getModelDataShared()->getCompositeVertexList().at(0).x;
+
+
+   //   //vector<Aftr::Vector, allocator <Aftr::Vector>> vertexList = wo->getModel()->getCompositeVertexList();
+   //   //vector<unsigned int, allocator<unsigned int>> indexList = wo->getModel()->getCompositeIndexList();
+
+   //   ////float* vertexListCopy = new float[vertexList.size() * 3];
+   //   ////size_t i = 0;
+   //   ////for  (auto &v : vertexList)
+   //   ////{
+   //   ////    
+   //   ////    vertexListCopy[i *3 + 0] = v[0];
+   //   ////    vertexListCopy[i *3 + 1] = v[1];
+   //   ////    vertexListCopy[i *3 + 2] = v[2];
+   //   ////    i++;
+   //   ////}
+
+   //   //unsigned int* indexListCopy = new unsigned int[indexList.size()];
+   //   ////i = 0;
+
+   //   ////for (int j =0; j < indexList.size(); j++)
+   //   ////{
+   //   ////    indexListCopy[i] = indexList[j];
+   //   ////    /*cout << "******************************************";
+   //   ////    cout << indexList[j];*/
+   //   ////    i++;
+   //   ////}
+
+   //   //physx::PxTriangleMeshDesc meshDesc;
+   //   //
+   //   //meshDesc.points.count = vertexList.size();
+   //   //meshDesc.points.stride = 3 * sizeof(float) * 3;
+   //   //meshDesc.points.data = vertexListCopy;
+
+   //}
+
+
    {
       // maze object
       WO* wo = WO::New(maze, Vector( 1, 1, 1 ), MESH_SHADING_TYPE::mstFLAT );
@@ -302,51 +355,6 @@ void Aftr::GLViewFinalProject::loadMap(){
       wo->renderOrderType = RENDER_ORDER_TYPE::roOPAQUE;
       wo->setLabel( "Maze" );
       worldLst->push_back( wo );
-
-      /*const std::vector<Aftr::Vector> vertexList = wo->getModel()->getCompositeVertexList();
-      wo->get*/
-      /*std::vector<unsigned int, std::allocator<unsigned int>> indexList = wo->getModel()->getCompositeIndexList();
-
-      float* vertexListCopy = new float[vertexList.size() * 3];
-      size_t i = 0;
-      for (auto& v : vertexList) {
-        vertexListCopy[i * 3 + 0] = v[0];
-        vertexListCopy[i * 3 + 1] = v[1];
-        vertexListCopy[i * 3 + 2] = v[2];
-        i++;
-      }
-
-      std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n*********************************************\n\n\n\n";
-      unsigned int* indexListCopy = new unsigned int[indexList.size()];
-      i = 0;
-      for (auto& index: indexList) {
-          std::cout << index << std::endl;
-          i++;
-      }
-
-      physx::PxTriangleMeshDesc meshDesc;
-      meshDesc.points.count = vertexList.size();
-      meshDesc.points.stride = sizeof(float) * 3;
-      meshDesc.points.data = vertexListCopy;
-
-      meshDesc.triangles.count = indexList.size() / 3;
-      meshDesc.triangles.stride = 3 * sizeof(unsigned int);
-      meshDesc.triangles.data = indexListCopy;
-
-      physx::PxDefaultMemoryOutputStream writeBuffer;
-      physx::PxTriangleMeshCookingResult::Enum result;
-      
-
-      physx::PxDefaultMemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
-      physx::PxTriangleMesh* mesh = p->createTriangleMesh(readBuffer);
-
-      physx::PxMaterial* gMaterial = p->createMaterial(0.5f, 0.5f, 0.5f);
-      physx::PxShape* shape = p->createShape(physx::PxTriangleMeshGeometry(mesh), *gMaterial, true);
-      physx::PxTransform t({0,0,0});
-
-      physx::PxRigidStatic* a = p->createRigidStatic(t);
-      a->attachShape(*shape);
-      scene->addActor(*a);*/
 
       this->maze = wo;
    }
@@ -383,6 +391,8 @@ void Aftr::GLViewFinalProject::loadMap(){
    createFinalProjectWayPoints();
 }
 
+
+
 void GLViewFinalProject::createFinalProjectWayPoints(){
     // Create a waypoint with a radius of 3, a frequency of 5 seconds, activated by GLView's camera, and is visible.
     WayPointParametersBase params(this);
@@ -401,29 +411,35 @@ void GLViewFinalProject::doSound() {
     twoDimSoundSource = twoDim->addSoundSourceFromFile(filename.c_str());
     twoDimSound = twoDim->play2D(twoDimSoundSource, true, true, true, false);
 
+    threeDim = irrklang::createIrrKlangDevice();
+    std::string filename3(ManagerEnvironmentConfiguration::getLMM() + "ball_roll.mp3");
+    threeDimSoundSource = threeDim->addSoundSourceFromFile(filename3.c_str());
+    threeDimSound = threeDim->play3D(threeDimSoundSource, vec3df(0, 0, 0), true, true, true, false);
+
 }
 
 void GLViewFinalProject::soundUpdate() {
     twoDim->setSoundVolume(gui->get_2d_volume());
 
-    //Vector pos = test->getPosition();
-    //vec3df cubePosition = { pos[0], pos[1], pos[2] };
+    Vector pos = ball->getPosition();
+    vec3df cubePosition = { pos[0], pos[1], pos[2] };
 
-    //Vector camPos = cam->getPosition();
-    //vec3df cameraPosition = { camPos[0], camPos[1], camPos[2] };
+    Vector camPos = cam->getPosition();
+    vec3df cameraPosition = { camPos[0], camPos[1], camPos[2] };
 
-    //Vector lookDir = cam->getLookDirection();
-    //vec3df cameraLookDirection = { lookDir[0], lookDir[1], lookDir[2] };
+    Vector lookDir = cam->getLookDirection();
+    vec3df cameraLookDirection = { lookDir[0], lookDir[1], lookDir[2] };
 
-    //threeDim->setListenerPosition(cameraPosition, cameraLookDirection);
+    threeDim->setListenerPosition(cameraPosition, cameraLookDirection);
 
-    //threeDimSound->setPosition(cubePosition);
+    threeDimSound->setPosition(cubePosition);
 
-    // Play
-    //if (gui->is3d) {
-    //    threeDimSound->setIsPaused(false);
-    //    gui->is3d = false;
-    //}
+    gui->volume3 = 1 / (ball->getForce());
+
+    if (gui->is3d) {
+        threeDimSound->setIsPaused(false);
+        gui->is3d = false;
+    }
     if (gui->is2d) {
         twoDimSound->setIsPaused(false);
         gui->is2d = false;
@@ -443,17 +459,17 @@ void GLViewFinalProject::soundUpdate() {
         gui->pause2d = false;
     }
 
-    //if (gui->pause3d)
-    //{
-    //    if (threeDimSound->getIsPaused())
-    //    {
-    //        threeDimSound->setIsPaused(false);
-    //    }
-    //    else {
-    //        threeDimSound->setIsPaused(true);
-    //    }
-    //    gui->pause3d = false;
-    //}
+    if (gui->pause3d)
+    {
+        if (threeDimSound->getIsPaused())
+        {
+            threeDimSound->setIsPaused(false);
+        }
+        else {
+            threeDimSound->setIsPaused(true);
+        }
+        gui->pause3d = false;
+    }
 
 }
 
@@ -464,5 +480,12 @@ void GLViewFinalProject::ballUpdate() {
     {
         ball->setPosition(Vector(0, 0.0f, gui->dropBallHeight));
         gui->dropBall = false;
+    }
+
+    if (gui-> resetBall)
+    {
+        ball->stopForce();
+        ball->setPosition(Vector(0, 0.0f, 10.0f));//update with maze object implementation
+        gui->resetBall = false;
     }
 }
