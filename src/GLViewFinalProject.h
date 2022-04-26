@@ -42,6 +42,7 @@ public:
    void doSound();
    void soundUpdate();
    void ballUpdate();
+   void keyUpdate();
 
    WO* skybox;
    WO* table;
@@ -51,10 +52,17 @@ public:
    float pitchY = 0.0f;
    float pitchZ = 0.0f;
 
-   bool wPressed = false;
-   bool aPressed = false;
+    bool wPressed = false;
+    bool aPressed = false;
     bool sPressed = false;
     bool dPressed = false;
+
+    bool leftPressed = false;
+    bool rightPressed = false;
+    bool upPressed = false;
+    bool downPressed = false;
+
+    bool jumpPressed = false;
 
     ISoundEngine* twoDim;
     ISoundSource* twoDimSoundSource;
