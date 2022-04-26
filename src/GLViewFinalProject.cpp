@@ -302,7 +302,55 @@ void Aftr::GLViewFinalProject::loadMap(){
       wo->renderOrderType = RENDER_ORDER_TYPE::roOPAQUE;
       wo->setLabel( "Maze" );
       worldLst->push_back( wo );
+
+      /*const std::vector<Aftr::Vector> vertexList = wo->getModel()->getCompositeVertexList();
+      wo->get*/
+      /*std::vector<unsigned int, std::allocator<unsigned int>> indexList = wo->getModel()->getCompositeIndexList();
+
+      float* vertexListCopy = new float[vertexList.size() * 3];
+      size_t i = 0;
+      for (auto& v : vertexList) {
+        vertexListCopy[i * 3 + 0] = v[0];
+        vertexListCopy[i * 3 + 1] = v[1];
+        vertexListCopy[i * 3 + 2] = v[2];
+        i++;
+      }
+
+      std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n*********************************************\n\n\n\n";
+      unsigned int* indexListCopy = new unsigned int[indexList.size()];
+      i = 0;
+      for (auto& index: indexList) {
+          std::cout << index << std::endl;
+          i++;
+      }
+
+      physx::PxTriangleMeshDesc meshDesc;
+      meshDesc.points.count = vertexList.size();
+      meshDesc.points.stride = sizeof(float) * 3;
+      meshDesc.points.data = vertexListCopy;
+
+      meshDesc.triangles.count = indexList.size() / 3;
+      meshDesc.triangles.stride = 3 * sizeof(unsigned int);
+      meshDesc.triangles.data = indexListCopy;
+
+      physx::PxDefaultMemoryOutputStream writeBuffer;
+      physx::PxTriangleMeshCookingResult::Enum result;
+      
+
+      physx::PxDefaultMemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
+      physx::PxTriangleMesh* mesh = p->createTriangleMesh(readBuffer);
+
+      physx::PxMaterial* gMaterial = p->createMaterial(0.5f, 0.5f, 0.5f);
+      physx::PxShape* shape = p->createShape(physx::PxTriangleMeshGeometry(mesh), *gMaterial, true);
+      physx::PxTransform t({0,0,0});
+
+      physx::PxRigidStatic* a = p->createRigidStatic(t);
+      a->attachShape(*shape);
+      scene->addActor(*a);*/
+
+      this->maze = wo;
    }
+
    {
        //Create A Physics Plane
        physx::PxMaterial* gMaterial = p->createMaterial(0.5f, 0.5f, 0.6f);

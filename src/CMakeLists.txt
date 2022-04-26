@@ -102,9 +102,9 @@ ENDIF()
 #This section is already populated with default values from: ../../../include/cmake/aftrModuleCommonProjectIncludesAndLibs.cmake
 #This can be made WIN32 or UNIX specific, depending on the platform, if desired.
 TARGET_INCLUDE_DIRECTORIES( ${PROJECT_NAME} PRIVATE 
-                           "${AFTR_USR_INCLUDE_DIR}/../irrklang/"
-                           "${AFTR_USR_INCLUDE_DIR}/../physx/"
-                           "${AFTR_USR_INCLUDE_DIR}/../pxshared/"
+                           "${AFTR_USR_INCLUDE_DIR}/irrklang/"
+                           "${AFTR_USR_INCLUDE_DIR}/physx/include"
+                           "${AFTR_USR_INCLUDE_DIR}/pxshared/include"
                            #"${CMAKE_SOURCE_DIR}/../my3rdPartyLib/include/"
                           )
 
