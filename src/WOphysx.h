@@ -26,12 +26,11 @@ namespace Aftr {
         void rotateAboutRelZ(float deltaRadianAngle);
         void updatePoseFromPhysicsEngine(PxActor* a);
         void addForce(PxVec3 force);
-
+        void stopForce();
+        float  getForce();
         float* vertexListCopy;
         unsigned int* indicesCopy;
         WOphysx* _wo;
-
-
     protected:
         WOphysx(PxScene* scene,PxFoundation* found, PxPhysics* phys);
         virtual void onCreate(const std::string& path, const Vector& scale, Aftr::MESH_SHADING_TYPE mst, PxPhysics* p, std::string physxInfo);

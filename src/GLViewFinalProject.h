@@ -60,6 +60,10 @@ public:
     ISoundSource* twoDimSoundSource;
     ISound* twoDimSound;
 
+    ISoundEngine* threeDim;
+    ISoundSource* threeDimSoundSource;
+    ISound* threeDimSound;
+
     Gooey* gui;
 
     //Physics Stuff
