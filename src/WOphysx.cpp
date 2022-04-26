@@ -37,6 +37,19 @@ namespace Aftr{
 		a->setLinearVelocity(PxVec3(0, 0, 0));
 		a->addForce(force, PxForceMode::eIMPULSE);
 	}
+	void WOphysx::stopForce() {
+		a->setLinearVelocity(PxVec3(0, 0, 0));
+	}
+
+	float WOphysx::getForce() {
+		PxVec3 temp = a->getLinearVelocity();
+		int volume = 0;
+		for (size_t i = 0; i < 3; i++)
+		{
+			volume += temp[i];
+		}
+		return volume;
+	}
 
 	void WOphysx::updatePoseFromPhysicsEngine(PxActor* a){
 		if (this->a != NULL){

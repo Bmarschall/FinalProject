@@ -20,6 +20,8 @@ namespace Aftr {
         void setPosition(Vector vec);
         void updatePoseFromPhysicsEngine(PxActor* a);
         void addForce(PxVec3 force);
+        void stopForce();
+        float  getForce();
     protected:
         WOphysx(PxScene* scene);
         virtual void onCreate(const std::string& path, const Vector& scale, Aftr::MESH_SHADING_TYPE mst, PxPhysics* p, std::string physxInfo);
