@@ -37,6 +37,7 @@
 #include "WOphysx.h"
 #include "irrKlang.h"
 #include "Gooey.h"
+#include "Model.h"
 
 using namespace Aftr;
 float MAX_TILT = 15; // max board tilt in degrees
@@ -178,10 +179,10 @@ void GLViewFinalProject::updateWorld() {
                {
                    WOphysx* wo = static_cast<WOphysx*>(actor->userData);
                    //at some point earlier the actor?s userdata was set to the corresponding WO?s pointer
-                   std::cout << "calling Physics Update" << std::endl;
+                   //std::cout << "calling Physics Update" << std::endl;
                    wo->updatePoseFromPhysicsEngine(actor);//add this function to your inherited class
                }
-               else { std::cout << "Warn:: No Assosiated WO with actor" << i << std::endl; }
+               //else { std::cout << "Warn:: No Assosiated WO with actor" << i << std::endl; }
                //make sure it has the information it needs, either the actor or just the pose
            }
        }
@@ -296,74 +297,33 @@ void Aftr::GLViewFinalProject::loadMap(){
 
    {
       // maze object
-      WO* wo = WO::New(maze, Vector( 1, 1, 1 ), MESH_SHADING_TYPE::mstFLAT );
-      wo->setPosition( Vector( 0, 0, 50.0f ) );
-      wo->rotateAboutRelX(-90 * DEGtoRAD);
+      WOphysx* wo = WOphysx::New(maze, Vector( 1, 1, 1 ), MESH_SHADING_TYPE::mstFLAT,p,scene,"t",f);
+
+      wo->upon_async_model_loaded([wo]()
+          {
+              wo->setPosition(Vector(0, 0, 40));
+              wo->rotateAboutRelX(-90 * DEGtoRAD);
+          });
+      
       wo->renderOrderType = RENDER_ORDER_TYPE::roOPAQUE;
       wo->setLabel( "Maze" );
       worldLst->push_back( wo );
-
-      /*const std::vector<Aftr::Vector> vertexList = wo->getModel()->getCompositeVertexList();
-      wo->get*/
-      /*std::vector<unsigned int, std::allocator<unsigned int>> indexList = wo->getModel()->getCompositeIndexList();
-
-      float* vertexListCopy = new float[vertexList.size() * 3];
-      size_t i = 0;
-      for (auto& v : vertexList) {
-        vertexListCopy[i * 3 + 0] = v[0];
-        vertexListCopy[i * 3 + 1] = v[1];
-        vertexListCopy[i * 3 + 2] = v[2];
-        i++;
-      }
-
-      std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n*********************************************\n\n\n\n";
-      unsigned int* indexListCopy = new unsigned int[indexList.size()];
-      i = 0;
-      for (auto& index: indexList) {
-          std::cout << index << std::endl;
-          i++;
-      }
-
-      physx::PxTriangleMeshDesc meshDesc;
-      meshDesc.points.count = vertexList.size();
-      meshDesc.points.stride = sizeof(float) * 3;
-      meshDesc.points.data = vertexListCopy;
-
-      meshDesc.triangles.count = indexList.size() / 3;
-      meshDesc.triangles.stride = 3 * sizeof(unsigned int);
-      meshDesc.triangles.data = indexListCopy;
-
-      physx::PxDefaultMemoryOutputStream writeBuffer;
-      physx::PxTriangleMeshCookingResult::Enum result;
-      
-
-      physx::PxDefaultMemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
-      physx::PxTriangleMesh* mesh = p->createTriangleMesh(readBuffer);
-
-      physx::PxMaterial* gMaterial = p->createMaterial(0.5f, 0.5f, 0.5f);
-      physx::PxShape* shape = p->createShape(physx::PxTriangleMeshGeometry(mesh), *gMaterial, true);
-      physx::PxTransform t({0,0,0});
-
-      physx::PxRigidStatic* a = p->createRigidStatic(t);
-      a->attachShape(*shape);
-      scene->addActor(*a);*/
-
       this->maze = wo;
    }
 
    {
-       //Create A Physics Plane
-       physx::PxMaterial* gMaterial = p->createMaterial(0.5f, 0.5f, 0.6f);
-       PxRigidStatic* groundPlane = PxCreatePlane(*p, PxPlane(0, 0, 1, 0), *gMaterial);
-       scene->addActor(*groundPlane);
-   }
-   {
-       ball = WOphysx::New(sphere, Vector(1, 1, 1), MESH_SHADING_TYPE::mstFLAT, p, scene,"s");
-       ball->setPosition(Vector(0, 0.0f, 10));
+       ball = WOphysx::New(sphere, Vector(1, 1, 1), MESH_SHADING_TYPE::mstFLAT, p, scene,"s",f);
+       ball->setPosition(Vector(0, 0.0f, 100));
        ball->renderOrderType = RENDER_ORDER_TYPE::roOPAQUE;
        ball->setLabel("Grass");
-
+       //std::cout << "BALL INFO SIZE = " << ball->getModel()->getModelDataShared()->getCompositeVertexList().size() << std::endl;
        worldLst->push_back(ball);
+   }
+   {
+       ////Create A Physics Plane
+       //physx::PxMaterial* gMaterial = p->createMaterial(0.5f, 0.5f, 0.6f);
+       //PxRigidStatic* groundPlane = PxCreatePlane(*p, PxPlane(0, 0, 1, 0), *gMaterial);
+       //scene->addActor(*groundPlane);
    }
    
    Gooey* goo = Gooey::New(nullptr);
