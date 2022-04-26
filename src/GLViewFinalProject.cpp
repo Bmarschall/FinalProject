@@ -37,6 +37,7 @@
 #include "WOphysx.h"
 #include "irrKlang.h"
 #include "Gooey.h"
+#include "Model.h"
 
 using namespace std;
 
@@ -180,10 +181,10 @@ void GLViewFinalProject::updateWorld() {
                {
                    WOphysx* wo = static_cast<WOphysx*>(actor->userData);
                    //at some point earlier the actor?s userdata was set to the corresponding WO?s pointer
-                   std::cout << "calling Physics Update" << std::endl;
+                   //std::cout << "calling Physics Update" << std::endl;
                    wo->updatePoseFromPhysicsEngine(actor);//add this function to your inherited class
                }
-               else { std::cout << "Warn:: No Assosiated WO with actor" << i << std::endl; }
+               //else { std::cout << "Warn:: No Assosiated WO with actor" << i << std::endl; }
                //make sure it has the information it needs, either the actor or just the pose
            }
        }
@@ -349,9 +350,14 @@ void Aftr::GLViewFinalProject::loadMap(){
 
    {
       // maze object
-      WO* wo = WO::New(maze, Vector( 1, 1, 1 ), MESH_SHADING_TYPE::mstFLAT );
-      wo->setPosition( Vector( 0, 0, 50.0f ) );
-      wo->rotateAboutRelX(-90 * DEGtoRAD);
+      WOphysx* wo = WOphysx::New(maze, Vector( 1, 1, 1 ), MESH_SHADING_TYPE::mstFLAT,p,scene,"t",f);
+
+      wo->upon_async_model_loaded([wo]()
+          {
+              wo->setPosition(Vector(0, 0, 40));
+              wo->rotateAboutRelX(-90 * DEGtoRAD);
+          });
+      
       wo->renderOrderType = RENDER_ORDER_TYPE::roOPAQUE;
       wo->setLabel( "Maze" );
       worldLst->push_back( wo );
@@ -360,18 +366,18 @@ void Aftr::GLViewFinalProject::loadMap(){
    }
 
    {
-       //Create A Physics Plane
-       physx::PxMaterial* gMaterial = p->createMaterial(0.5f, 0.5f, 0.6f);
-       PxRigidStatic* groundPlane = PxCreatePlane(*p, PxPlane(0, 0, 1, 0), *gMaterial);
-       scene->addActor(*groundPlane);
-   }
-   {
-       ball = WOphysx::New(sphere, Vector(1, 1, 1), MESH_SHADING_TYPE::mstFLAT, p, scene,"s");
-       ball->setPosition(Vector(0, 0.0f, 10));
+       ball = WOphysx::New(sphere, Vector(1, 1, 1), MESH_SHADING_TYPE::mstFLAT, p, scene,"s",f);
+       ball->setPosition(Vector(0, 0.0f, 100));
        ball->renderOrderType = RENDER_ORDER_TYPE::roOPAQUE;
        ball->setLabel("Grass");
-
+       //std::cout << "BALL INFO SIZE = " << ball->getModel()->getModelDataShared()->getCompositeVertexList().size() << std::endl;
        worldLst->push_back(ball);
+   }
+   {
+       ////Create A Physics Plane
+       //physx::PxMaterial* gMaterial = p->createMaterial(0.5f, 0.5f, 0.6f);
+       //PxRigidStatic* groundPlane = PxCreatePlane(*p, PxPlane(0, 0, 1, 0), *gMaterial);
+       //scene->addActor(*groundPlane);
    }
    
    Gooey* goo = Gooey::New(nullptr);
