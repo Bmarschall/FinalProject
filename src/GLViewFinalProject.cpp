@@ -35,10 +35,12 @@
 #include "AftrGLRendererBase.h"
 #include "PxPhysicsAPI.h"
 #include "WOphysx.h"
+#include "irrKlang.h"
+#include "Gooey.h"
 
 using namespace Aftr;
-const int MAX_TILT = 15; // max board tilt in degrees
-const float TILT_SPEED = 1;
+float MAX_TILT = 15; // max board tilt in degrees
+float TILT_SPEED = 1;
 
 GLViewFinalProject* GLViewFinalProject::New( const std::vector< std::string >& args ){
    GLViewFinalProject* glv = new GLViewFinalProject( args );
@@ -73,6 +75,7 @@ GLViewFinalProject::GLViewFinalProject( const std::vector< std::string >& args )
         scene->setFlag(PxSceneFlag::eENABLE_ACTIVE_ACTORS, true);
         scene->setGravity(PxVec3(0.0, 0.0, -9.81));
     }
+    doSound();
 }
 
 void GLViewFinalProject::onCreate(){
@@ -95,6 +98,13 @@ void GLViewFinalProject::updateWorld() {
    GLView::updateWorld(); //Just call the parent's update world first.
                           //If you want to add additional functionality, do it after
                           //this call.
+
+   soundUpdate();
+   ballUpdate();
+
+   MAX_TILT = gui->MAX_TILT;
+   TILT_SPEED = gui->TILT_SPEED;
+   scene->setGravity(PxVec3(0.0, 0.0, gui->Gravity));
 
    if (this->wPressed) {
        if (this->pitchX > -MAX_TILT) {
@@ -243,7 +253,7 @@ void Aftr::GLViewFinalProject::loadMap(){
 
    //SkyBox Textures readily available
    std::vector< std::string > skyBoxImageNames; //vector to store texture paths
-   skyBoxImageNames.push_back(ManagerEnvironmentConfiguration::getSMM() + "/images/skyboxes/room.jpg");
+   skyBoxImageNames.push_back(ManagerEnvironmentConfiguration::getLMM() + "skyboxes/room.jpg");
 
    {
       //Create the SkyBox
@@ -300,27 +310,27 @@ void Aftr::GLViewFinalProject::loadMap(){
        scene->addActor(*groundPlane);
    }
    {
-       WOphysx* wo = WOphysx::New(sphere, Vector(1, 1, 1), MESH_SHADING_TYPE::mstFLAT, p, scene,"s");
-       wo->setPosition(Vector(0, 0.0f, 10));
-       wo->renderOrderType = RENDER_ORDER_TYPE::roOPAQUE;
-       wo->setLabel("Grass");
+       ball = WOphysx::New(sphere, Vector(1, 1, 1), MESH_SHADING_TYPE::mstFLAT, p, scene,"s");
+       ball->setPosition(Vector(0, 0.0f, 10));
+       ball->renderOrderType = RENDER_ORDER_TYPE::roOPAQUE;
+       ball->setLabel("Grass");
 
-       worldLst->push_back(wo);
+       worldLst->push_back(ball);
    }
    
-   //Make a Dear Im Gui instance via the WOImGui in the engine... This calls
-   //the default Dear ImGui demo that shows all the features... To create your own,
-   //inherit from WOImGui and override WOImGui::drawImGui_for_this_frame(...) (among any others you need).
-   //WOImGui* gui = WOImGui::New( nullptr );
-   //gui->setLabel( "My Gui" );
-   //gui->subscribe_drawImGuiWidget(
-   //   [this, gui]() //this is a lambda, the capture clause is in [], the input argument list is in (), and the body is in {}
-   //   {
-   //      ImGui::ShowDemoWindow(); //Displays the default ImGui demo from C:/repos/aburn/engine/src/imgui_implot/implot_demo.cpp
-   //      WOImGui::draw_AftrImGui_Demo( gui ); //Displays a small Aftr Demo from C:/repos/aburn/engine/src/aftr/WOImGui.cpp
-   //      ImPlot::ShowDemoWindow(); //Displays the ImPlot demo using ImGui from C:/repos/aburn/engine/src/imgui_implot/implot_demo.cpp
-   //   } );
-   //this->worldLst->push_back( gui );
+   Gooey* goo = Gooey::New(nullptr);
+   goo->setLabel("Goo");
+   goo->subscribe_drawImGuiWidget(
+       [this, goo]() //this is a lambda, the capture clause is in [], the input argument list is in (), and the body is in {}
+       {
+           //ImGui::ShowDemoWindow(); //Displays the default ImGui demo from C:/repos/aburn/engine/src/imgui_implot/implot_demo.cpp
+           Gooey::draw_gui(goo); //Displays a small Aftr Demo from C:/repos/aburn/engine/src/aftr/WOImGui.cpp
+           //ImPlot::ShowDemoWindow(); //Displays the ImPlot demo using ImGui from C:/repos/aburn/engine/src/imgui_implot/implot_demo.cpp
+       });
+   this->worldLst->push_back(goo);
+
+   gui = goo;
+
 
    createFinalProjectWayPoints();
 }
@@ -334,4 +344,77 @@ void GLViewFinalProject::createFinalProjectWayPoints(){
     WOWayPointSpherical* wayPt = WOWayPointSpherical::New(params, 3);
     wayPt->setPosition(Vector(50, 0, 3));
     worldLst->push_back(wayPt);
+}
+
+void GLViewFinalProject::doSound() {
+
+    twoDim = irrklang::createIrrKlangDevice();
+    std::string filename(ManagerEnvironmentConfiguration::getLMM() + "Cool.wav");
+    twoDimSoundSource = twoDim->addSoundSourceFromFile(filename.c_str());
+    twoDimSound = twoDim->play2D(twoDimSoundSource, true, true, true, false);
+
+}
+
+void GLViewFinalProject::soundUpdate() {
+    twoDim->setSoundVolume(gui->get_2d_volume());
+
+    //Vector pos = test->getPosition();
+    //vec3df cubePosition = { pos[0], pos[1], pos[2] };
+
+    //Vector camPos = cam->getPosition();
+    //vec3df cameraPosition = { camPos[0], camPos[1], camPos[2] };
+
+    //Vector lookDir = cam->getLookDirection();
+    //vec3df cameraLookDirection = { lookDir[0], lookDir[1], lookDir[2] };
+
+    //threeDim->setListenerPosition(cameraPosition, cameraLookDirection);
+
+    //threeDimSound->setPosition(cubePosition);
+
+    // Play
+    //if (gui->is3d) {
+    //    threeDimSound->setIsPaused(false);
+    //    gui->is3d = false;
+    //}
+    if (gui->is2d) {
+        twoDimSound->setIsPaused(false);
+        gui->is2d = false;
+    }
+
+    //Pause
+
+    if (gui->pause2d)
+    {
+        if (twoDimSound->getIsPaused())
+        {
+            twoDimSound->setIsPaused(false);
+        }
+        else {
+            twoDimSound->setIsPaused(true);
+        }
+        gui->pause2d = false;
+    }
+
+    //if (gui->pause3d)
+    //{
+    //    if (threeDimSound->getIsPaused())
+    //    {
+    //        threeDimSound->setIsPaused(false);
+    //    }
+    //    else {
+    //        threeDimSound->setIsPaused(true);
+    //    }
+    //    gui->pause3d = false;
+    //}
+
+}
+
+void GLViewFinalProject::ballUpdate() {
+
+
+    if (gui-> dropBall)
+    {
+        ball->setPosition(Vector(0, 0.0f, gui->dropBallHeight));
+        gui->dropBall = false;
+    }
 }

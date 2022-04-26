@@ -2,6 +2,12 @@
 
 #include "GLView.h"
 #include "PxPhysicsAPI.h"
+#include "irrKlang.h"
+#include "Gooey.h"
+#include "WOphysx.h"
+
+
+using namespace irrklang;
 
 namespace Aftr
 {
@@ -33,6 +39,9 @@ public:
    virtual void onMouseMove( const SDL_MouseMotionEvent& e );
    virtual void onKeyDown( const SDL_KeyboardEvent& key );
    virtual void onKeyUp( const SDL_KeyboardEvent& key );
+   void doSound();
+   void soundUpdate();
+   void ballUpdate();
 
    WO* skybox;
    WO* table;
@@ -45,12 +54,20 @@ public:
     bool sPressed = false;
     bool dPressed = false;
 
+    ISoundEngine* twoDim;
+    ISoundSource* twoDimSoundSource;
+    ISound* twoDimSound;
+
+    Gooey* gui;
+
     //Physics Stuff
     physx::PxDefaultAllocator a;
     physx::PxDefaultErrorCallback e;
     physx::PxFoundation* f;
     physx::PxPhysics* p;
     physx::PxScene* scene;
+
+    WOphysx* ball;
 
 protected:
    GLViewFinalProject( const std::vector< std::string >& args );
