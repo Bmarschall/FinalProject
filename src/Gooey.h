@@ -36,7 +36,7 @@ namespace Aftr {
 
             ImGui::Text("                                       ");
 
-            float time = 60 - ImGui::GetTime();
+            time = 60 - ImGui::GetTime();
 
             if (time > 0) {
 
@@ -137,6 +137,8 @@ namespace Aftr {
         }
 
         float get_2d_volume() { return volume; }
+        bool getIsPaused() { return is2d; }
+        void setIsPaused(bool flag) { is2d = flag; }
 
         bool is2d = false;
         bool is3d = false;
@@ -147,9 +149,10 @@ namespace Aftr {
         bool dropBall = false;
         float MAX_TILT = 15;
         float TILT_SPEED = 1;
-        float Gravity = -9.81;
+        float Gravity = -29.81;
         float XGravity = 0;
         float YGravity = 0;
+        float time;
 
 
         float rollMult = 20;
@@ -163,7 +166,7 @@ namespace Aftr {
         Gooey(WOGUI* parentWOGUI) : IFace(this), WOImGuiAbstract(parentWOGUI){}
     private:
 
-        float volume = 0.002f;
+        float volume = 0.222f;
         
 
         std::vector< Callback_OnDrawImGui > subscribers_OnDrawImGui;

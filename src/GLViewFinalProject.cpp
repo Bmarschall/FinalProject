@@ -370,10 +370,10 @@ void GLViewFinalProject::doSound() {
     twoDim = irrklang::createIrrKlangDevice();
     std::string filename(ManagerEnvironmentConfiguration::getLMM() + "Cool.wav");
     twoDimSoundSource = twoDim->addSoundSourceFromFile(filename.c_str());
-    twoDimSound = twoDim->play2D(twoDimSoundSource, true, true, true, false);
+    twoDimSound = twoDim->play2D(twoDimSoundSource, true, false, true, false);
 
     threeDim = irrklang::createIrrKlangDevice();
-    std::string filename3(ManagerEnvironmentConfiguration::getLMM() + "ball_roll.mp3");
+    std::string filename3(ManagerEnvironmentConfiguration::getLMM() + "ball_roll_loud.mp3");
     threeDimSoundSource = threeDim->addSoundSourceFromFile(filename3.c_str());
     threeDimSound = threeDim->play3D(threeDimSoundSource, vec3df(0, 0, 0), true, true, true, false);
 
