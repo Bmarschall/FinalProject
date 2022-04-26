@@ -361,10 +361,7 @@ void Aftr::GLViewFinalProject::loadMap(){
       wo->renderOrderType = RENDER_ORDER_TYPE::roOPAQUE;
       wo->setLabel( "Maze" );
       worldLst->push_back( wo );
-<<<<<<< HEAD
-=======
 
->>>>>>> 93d29b8c6d6fc87630f6421b7110aa4556dd3f05
       this->maze = wo;
    }
 
