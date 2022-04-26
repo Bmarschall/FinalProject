@@ -105,6 +105,14 @@ void GLViewFinalProject::updateWorld() {
    soundUpdate();
    ballUpdate();
 
+   this->cam->setPosition(0, 60, 130);
+   this->cam->setCameraLookAtPoint(ball->getPosition());
+
+   if (ball->getPosition().z < 0) {
+       std::cout << "ball leaving world" << std::endl;
+       // when ball leaves the maze, ball wins
+   }
+
    MAX_TILT = gui->MAX_TILT;
    TILT_SPEED = gui->TILT_SPEED;
    scene->setGravity(PxVec3(gui->XGravity, gui->YGravity, gui->Gravity));
@@ -233,7 +241,7 @@ void Aftr::GLViewFinalProject::loadMap(){
    Axes::isVisible = true;
    this->glRenderer->isUsingShadowMapping( false ); //set to TRUE to enable shadow mapping, must be using GL 3.2+
 
-   this->cam->setPosition( 0, 75, 120 );
+   this->cam->setPosition( 0, 60, 130);
    this->cam->setCameraLookAtPoint({ 0,0,0 });
 
    std::string shinyRedPlasticCube( ManagerEnvironmentConfiguration::getSMM() + "/models/cube4x4x4redShinyPlastic_pp.wrl" );
@@ -280,11 +288,7 @@ void Aftr::GLViewFinalProject::loadMap(){
       wo->renderOrderType = RENDER_ORDER_TYPE::roOPAQUE;
 
       wo->upon_async_model_loaded( [wo]()
-         {
-            /*std::string tableTexturePath = ManagerEnvironmentConfiguration::getLMM() + "models/table.jpg";
-            Texture* text = ManagerTexture::loadTexture(tableTexturePath);
-            ModelMeshSkin tableSkin(text);*/
-            
+         {            
             ModelMeshSkin& tableSkin = wo->getModel()->getModelDataShared()->getModelMeshes().at(0)->getSkins().at(0);
             tableSkin.getMultiTextureSet().at( 0 )->setTextureRepeats( 5.0f );
             tableSkin.setAmbient( aftrColor4f( 0.4f, 0.4f, 0.4f, 1.0f ) ); //Color of object when it is not in any light
