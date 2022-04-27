@@ -104,66 +104,24 @@ void GLViewFinalProject::updateWorld() {
 
    soundUpdate();
    ballUpdate();
+   keyUpdate();
+
+   this->cam->setPosition(0, 60, 130);
+   this->cam->setCameraLookAtPoint(ball->getPosition());
+
+   if (ball->getPosition().z < 0) {
+       std::cout << "ball leaving world" << std::endl;
+       gui->gameStarted = false;
+       gui->time = 0.0f;
+       gui->winner = "Ball";
+       // when ball leaves the maze, ball wins
+   }
 
    MAX_TILT = gui->MAX_TILT;
    TILT_SPEED = gui->TILT_SPEED;
    scene->setGravity(PxVec3(gui->XGravity, gui->YGravity, gui->Gravity));
 
-   if (this->wPressed) {
-       if (this->pitchX > -MAX_TILT) {
-           this->pitchX -= TILT_SPEED;
-           this->table->rotateAboutRelX(-TILT_SPEED * DEGtoRAD);
-           this->skybox->rotateAboutRelX(-TILT_SPEED * DEGtoRAD);
-       }
-   }
 
-   if (this->aPressed) {
-       if (this->pitchY > -MAX_TILT) {
-           this->pitchY -= TILT_SPEED;
-           this->table->rotateAboutRelY(-TILT_SPEED * DEGtoRAD);
-           this->skybox->rotateAboutRelY(-TILT_SPEED * DEGtoRAD);
-       }
-   }
-
-   if (this->sPressed) {
-       if (this->pitchX < MAX_TILT) {
-           this->pitchX += TILT_SPEED;
-           this->table->rotateAboutRelX(TILT_SPEED * DEGtoRAD);
-           this->skybox->rotateAboutRelX(TILT_SPEED * DEGtoRAD);
-       }
-   }
-
-   if (this->dPressed) {
-       if (this->pitchY < MAX_TILT) {
-           this->pitchY += TILT_SPEED;
-           this->table->rotateAboutRelY(TILT_SPEED * DEGtoRAD);
-           this->skybox->rotateAboutRelY(TILT_SPEED * DEGtoRAD);
-       }
-   }
-
-   if (
-       this->wPressed == false &&
-       this->aPressed == false &&
-       this->sPressed == false &&
-       this->dPressed == false
-       ) {
-       this->pitchX = this->pitchX + (0.0 - this->pitchX) * 0.03;
-       this->pitchY = this->pitchY + (0.0 - this->pitchY) * 0.03;
-       this->pitchZ = this->pitchZ + (0.0 - this->pitchZ) * 0.03;
-
-       this->table->rotateToIdentity();
-       this->skybox->rotateToIdentity();
-       this->table->rotateAboutRelX(this->pitchX * DEGtoRAD);
-       this->skybox->rotateAboutRelX(this->pitchX * DEGtoRAD);
-       this->table->rotateAboutRelY(this->pitchY * DEGtoRAD);
-       this->skybox->rotateAboutRelY(this->pitchY * DEGtoRAD);
-       this->table->rotateAboutRelY(this->pitchZ * DEGtoRAD);
-       this->skybox->rotateAboutRelY(this->pitchZ * DEGtoRAD);
-
-       if (!gui->gameStarted) {
-           MAX_TILT = 0;
-       }
-   }
 
    //Physics Simulation
    {
@@ -206,24 +164,36 @@ void GLViewFinalProject::onMouseUp(const SDL_MouseButtonEvent& e) { GLView::onMo
 void GLViewFinalProject::onMouseMove( const SDL_MouseMotionEvent& e ){ GLView::onMouseMove( e ); }
 void GLViewFinalProject::onKeyUp(const SDL_KeyboardEvent& key) { 
     GLView::onKeyUp(key); 
-    if (key.keysym.sym == SDLK_a) { this->aPressed = false; }
-    if (key.keysym.sym == SDLK_d) { this->dPressed = false; }
-    if (key.keysym.sym == SDLK_w) { this->wPressed = false; }
-    if (key.keysym.sym == SDLK_s) { this->sPressed = false; }
+    if (key.keysym.sym == SDLK_a)    { this->aPressed        = false; }
+    if (key.keysym.sym == SDLK_d)    { this->dPressed        = false; }
+    if (key.keysym.sym == SDLK_w)    { this->wPressed        = false; }
+    if (key.keysym.sym == SDLK_s)    { this->sPressed        = false; }
+    if (key.keysym.sym == 1073741904){ this->leftPressed     = false; }
+    if (key.keysym.sym == 1073741903){ this->rightPressed    = false; }
+    if (key.keysym.sym == 1073741906){ this->upPressed       = false; }
+    if (key.keysym.sym == 1073741905){ this->downPressed     = false; }
+    //if (key.keysym.sym == 32)        { this->jumpPressed     = false; };
 
 }
 
 void GLViewFinalProject::onKeyDown( const SDL_KeyboardEvent& key ){
    GLView::onKeyDown( key );
-   if( key.keysym.sym == SDLK_0 )
-      this->setNumPhysicsStepsPerRender( 1 );
-   if( key.keysym.sym == SDLK_1 ){}
+    if( key.keysym.sym == SDLK_0 )
+        this->setNumPhysicsStepsPerRender( 1 );
+    if( key.keysym.sym == SDLK_1 ){}
 
-   // WASD CONTROLS
-   if (key.keysym.sym == SDLK_a) { this->aPressed = true; }
-   if (key.keysym.sym == SDLK_d) { this->dPressed = true; }
-   if (key.keysym.sym == SDLK_w) { this->wPressed = true; }
-   if (key.keysym.sym == SDLK_s) { this->sPressed = true; }
+    // WASD CONTROLS
+    if (key.keysym.sym == SDLK_a)    { this->aPressed       = true; }
+    if (key.keysym.sym == SDLK_d)    { this->dPressed       = true; }
+    if (key.keysym.sym == SDLK_w)    { this->wPressed       = true; }
+    if (key.keysym.sym == SDLK_s)    { this->sPressed       = true; }
+
+   //Key Controlls
+    if(key.keysym.sym == 1073741904) { this->leftPressed    = true; }
+    if(key.keysym.sym == 1073741903) { this->rightPressed   = true;}
+    if(key.keysym.sym == 1073741906) { this->upPressed      = true;}
+    if(key.keysym.sym == 1073741905) { this->downPressed    = true;}
+    if(key.keysym.sym == 32)         { this->jumpPressed    = true; }
 }
 
 void Aftr::GLViewFinalProject::loadMap(){
@@ -237,7 +207,7 @@ void Aftr::GLViewFinalProject::loadMap(){
    Axes::isVisible = true;
    this->glRenderer->isUsingShadowMapping( false ); //set to TRUE to enable shadow mapping, must be using GL 3.2+
 
-   this->cam->setPosition( 0, 75, 120 );
+   this->cam->setPosition( 0, 60, 130);
    this->cam->setCameraLookAtPoint({ 0,0,0 });
 
    std::string shinyRedPlasticCube( ManagerEnvironmentConfiguration::getSMM() + "/models/cube4x4x4redShinyPlastic_pp.wrl" );
@@ -284,11 +254,7 @@ void Aftr::GLViewFinalProject::loadMap(){
       wo->renderOrderType = RENDER_ORDER_TYPE::roOPAQUE;
 
       wo->upon_async_model_loaded( [wo]()
-         {
-            /*std::string tableTexturePath = ManagerEnvironmentConfiguration::getLMM() + "models/table.jpg";
-            Texture* text = ManagerTexture::loadTexture(tableTexturePath);
-            ModelMeshSkin tableSkin(text);*/
-            
+         {            
             ModelMeshSkin& tableSkin = wo->getModel()->getModelDataShared()->getModelMeshes().at(0)->getSkins().at(0);
             tableSkin.getMultiTextureSet().at( 0 )->setTextureRepeats( 5.0f );
             tableSkin.setAmbient( aftrColor4f( 0.4f, 0.4f, 0.4f, 1.0f ) ); //Color of object when it is not in any light
@@ -372,7 +338,7 @@ void GLViewFinalProject::createFinalProjectWayPoints(){
 void GLViewFinalProject::doSound() {
 
     twoDim = irrklang::createIrrKlangDevice();
-    std::string filename(ManagerEnvironmentConfiguration::getLMM() + "Cool.wav");
+    std::string filename(ManagerEnvironmentConfiguration::getLMM() + "Cool_Announcer.mp3");
     twoDimSoundSource = twoDim->addSoundSourceFromFile(filename.c_str());
     twoDimSound = twoDim->play2D(twoDimSoundSource, true, true, true, false);
 
@@ -450,7 +416,83 @@ void GLViewFinalProject::ballUpdate() {
     if (gui-> resetBall)
     {
         ball->stopForce();
-        ball->setPosition(Vector(0, 0.0f, 72.0f));//update with maze object implementation
+        ball->setPosition(Vector(0, 0.0f, 80.0f));//update with maze object implementation
         gui->resetBall = false;
     }
+}
+
+void GLViewFinalProject::keyUpdate() {
+
+    //WASD Controls
+    {
+        if (this->wPressed) {
+            if (this->pitchX > -MAX_TILT) {
+                this->pitchX -= TILT_SPEED;
+                this->table->rotateAboutRelX(-TILT_SPEED * DEGtoRAD);
+                this->skybox->rotateAboutRelX(-TILT_SPEED * DEGtoRAD);
+            }
+        }
+
+        if (this->aPressed) {
+            if (this->pitchY > -MAX_TILT) {
+                this->pitchY -= TILT_SPEED;
+                this->table->rotateAboutRelY(-TILT_SPEED * DEGtoRAD);
+                this->skybox->rotateAboutRelY(-TILT_SPEED * DEGtoRAD);
+            }
+        }
+
+        if (this->sPressed) {
+            if (this->pitchX < MAX_TILT) {
+                this->pitchX += TILT_SPEED;
+                this->table->rotateAboutRelX(TILT_SPEED * DEGtoRAD);
+                this->skybox->rotateAboutRelX(TILT_SPEED * DEGtoRAD);
+            }
+        }
+
+        if (this->dPressed) {
+            if (this->pitchY < MAX_TILT) {
+                this->pitchY += TILT_SPEED;
+                this->table->rotateAboutRelY(TILT_SPEED * DEGtoRAD);
+                this->skybox->rotateAboutRelY(TILT_SPEED * DEGtoRAD);
+            }
+        }
+
+        if (
+            this->wPressed == false &&
+            this->aPressed == false &&
+            this->sPressed == false &&
+            this->dPressed == false
+            ) {
+            this->pitchX = this->pitchX + (0.0 - this->pitchX) * 0.03;
+            this->pitchY = this->pitchY + (0.0 - this->pitchY) * 0.03;
+            this->pitchZ = this->pitchZ + (0.0 - this->pitchZ) * 0.03;
+
+            this->table->rotateToIdentity();
+            this->skybox->rotateToIdentity();
+            this->table->rotateAboutRelX(this->pitchX * DEGtoRAD);
+            this->skybox->rotateAboutRelX(this->pitchX * DEGtoRAD);
+            this->table->rotateAboutRelY(this->pitchY * DEGtoRAD);
+            this->skybox->rotateAboutRelY(this->pitchY * DEGtoRAD);
+            this->table->rotateAboutRelY(this->pitchZ * DEGtoRAD);
+            this->skybox->rotateAboutRelY(this->pitchZ * DEGtoRAD);
+        }
+    }
+
+    //Key Controls
+    {
+        PxVec3 oldVelocity = ball->getForces();
+
+        /*for (size_t i = 0; i < 3; i++)
+        {
+            cout << oldVelocity[i] << '\t';
+        }
+        cout << endl;*/
+        
+        if (leftPressed) { ball->addForce(PxVec3((10 * gui->ballMult) + gui->XGravity, 0 + gui->YGravity, 0)); }
+        if (rightPressed){ball->addForce(PxVec3(( - 10 * gui->ballMult) + gui->XGravity, 0 + gui->YGravity, 0)); }
+        if (upPressed)   { ball->addForce(PxVec3(0 + gui->XGravity,( - 10 * gui->ballMult) + gui->YGravity, 0)); }
+        if (downPressed) {ball->addForce(PxVec3(0 + gui->XGravity, (10 * gui->ballMult) + gui->YGravity, 0)); }
+        if (jumpPressed) { ball->addForce(PxVec3(0 + gui->XGravity, 0 + gui->YGravity, (30 * gui->ballMult))); jumpPressed = false; }
+    }
+
 }
