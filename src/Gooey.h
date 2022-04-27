@@ -194,14 +194,14 @@ namespace Aftr {
 
         float MAX_TILT = 15;
         float TILT_SPEED = 1;
-        float Gravity = -229.81;
+        float Gravity = -159.81;
         float XGravity = 0;
         float YGravity = 0;
         float time;
 
 
         float ballMult = 1;
-        float rollMult = 20;
+        float rollMult = 50;
         float dropBallHeight = 80;
         float volume3 = 1.0f;
 
