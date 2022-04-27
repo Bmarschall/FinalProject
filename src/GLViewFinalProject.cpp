@@ -172,7 +172,7 @@ void GLViewFinalProject::onKeyUp(const SDL_KeyboardEvent& key) {
     if (key.keysym.sym == 1073741903){ this->rightPressed    = false; }
     if (key.keysym.sym == 1073741906){ this->upPressed       = false; }
     if (key.keysym.sym == 1073741905){ this->downPressed     = false; }
-    if (key.keysym.sym == 32)        { this->jumpPressed     = false; };
+    //if (key.keysym.sym == 32)        { this->jumpPressed     = false; };
 
 }
 
@@ -480,11 +480,19 @@ void GLViewFinalProject::keyUpdate() {
 
     //Key Controls
     {
-        if (leftPressed) { ball->addForce(PxVec3(10 * gui->ballMult, 0, 0)); }
-        if (rightPressed){ball->addForce(PxVec3(-10 * gui->ballMult, 0, 0)); }
-        if (upPressed)   { ball->addForce(PxVec3(0, -10 * gui->ballMult, 0)); }
-        if (downPressed) {ball->addForce(PxVec3(0, 10 * gui->ballMult, 0)); }
-        if (jumpPressed) {ball->addForce(PxVec3(0, 10 * gui->ballMult, 0)); }
+        PxVec3 oldVelocity = ball->getForces();
+
+        /*for (size_t i = 0; i < 3; i++)
+        {
+            cout << oldVelocity[i] << '\t';
+        }
+        cout << endl;*/
+        
+        if (leftPressed) { ball->addForce(PxVec3((10 * gui->ballMult) + gui->XGravity, 0 + gui->YGravity, 0)); }
+        if (rightPressed){ball->addForce(PxVec3(( - 10 * gui->ballMult) + gui->XGravity, 0 + gui->YGravity, 0)); }
+        if (upPressed)   { ball->addForce(PxVec3(0 + gui->XGravity,( - 10 * gui->ballMult) + gui->YGravity, 0)); }
+        if (downPressed) {ball->addForce(PxVec3(0 + gui->XGravity, (10 * gui->ballMult) + gui->YGravity, 0)); }
+        if (jumpPressed) { ball->addForce(PxVec3(0 + gui->XGravity, 0 + gui->YGravity, (30 * gui->ballMult))); jumpPressed = false; }
     }
 
 }

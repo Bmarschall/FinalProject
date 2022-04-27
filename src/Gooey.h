@@ -209,7 +209,7 @@ namespace Aftr {
         std::string winner = "";
 
         float ballMult = 1;
-        float rollMult = 20;
+        float rollMult = 50;
         float dropBallHeight = 80;
         float volume3 = 1.0f;
 

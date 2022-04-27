@@ -158,6 +158,11 @@ namespace Aftr{
 		return volume;
 	}
 
+	PxVec3 WOphysx::getForces() {
+		return ad->getLinearVelocity();
+
+	}
+
 
 	void WOphysx::updatePoseFromPhysicsEngine(PxActor* a){
 		if (this->ad != NULL){

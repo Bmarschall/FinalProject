@@ -28,6 +28,7 @@ namespace Aftr {
         void addForce(PxVec3 force);
         void stopForce();
         float  getForce();
+        PxVec3 getForces();
         float* vertexListCopy;
         unsigned int* indicesCopy;
         WOphysx* _wo;
