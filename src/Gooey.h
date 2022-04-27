@@ -194,7 +194,7 @@ namespace Aftr {
 
         float MAX_TILT = 15;
         float TILT_SPEED = 1;
-        float Gravity = -229.81;
+        float Gravity = -109.81;
         float XGravity = 0;
         float YGravity = 0;
         float time;
