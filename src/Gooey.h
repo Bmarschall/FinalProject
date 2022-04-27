@@ -34,6 +34,7 @@ namespace Aftr {
             if (time < 0)
             {
                 gameStarted = false;
+                winner = "Maze";
             }
 
             if (ImGui::BeginPopup("Menu"))
@@ -63,6 +64,8 @@ namespace Aftr {
                     is2d = true;
                     is3d = true;
                     resetBall = true;
+                    winner = "";
+                    time = 60.0f;
                     startTime += ImGui::GetTime();
                 }
 
@@ -85,15 +88,20 @@ namespace Aftr {
                 gameStarted = false;
             }
             ImGui::Text(" Time Left ->");
-            time = 60 - (ImGui::GetTime() - startTime);
-
+            if (time != 0.0f) {
+                time = 60 - (ImGui::GetTime() - startTime);
+            }
+           
             if (time > 0) {
 
                 ImGui::ProgressBar(time / 60);
 
             }
             else {
-                ImGui::Text("Game Over");
+                char* char_arr;
+                std::string str_obj("Game Over. " + winner + " wins!");
+                char_arr = &str_obj[0];
+                ImGui::Text(char_arr);
             }
 
 
@@ -194,11 +202,11 @@ namespace Aftr {
 
         float MAX_TILT = 15;
         float TILT_SPEED = 1;
-        float Gravity = -229.81;
+        float Gravity = -100.81;
         float XGravity = 0;
         float YGravity = 0;
         float time;
-
+        std::string winner = "";
 
         float ballMult = 1;
         float rollMult = 20;

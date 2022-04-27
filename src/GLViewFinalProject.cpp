@@ -111,6 +111,9 @@ void GLViewFinalProject::updateWorld() {
 
    if (ball->getPosition().z < 0) {
        std::cout << "ball leaving world" << std::endl;
+       gui->gameStarted = false;
+       gui->time = 0.0f;
+       gui->winner = "Ball";
        // when ball leaves the maze, ball wins
    }
 
