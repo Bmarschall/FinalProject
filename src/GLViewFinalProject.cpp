@@ -106,6 +106,7 @@ void GLViewFinalProject::updateWorld() {
    soundUpdate();
    ballUpdate();
    keyUpdate();
+   sendUpdate();
 
    this->cam->setPosition(0, 60, 130);
    this->cam->setCameraLookAtPoint(ball->getPosition());
@@ -198,7 +199,7 @@ void GLViewFinalProject::onKeyDown( const SDL_KeyboardEvent& key ){
 }
 
 void Aftr::GLViewFinalProject::loadMap(){
-    client = NetMessengerClient::New("127.0.0.1", "12686");
+    client = NetMessengerClient::New("127.0.0.1", "12683");
 
    this->worldLst = new WorldList(); //WorldList is a 'smart' vector that is used to store WO*'s
    this->actorLst = new WorldList();
