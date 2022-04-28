@@ -5,6 +5,7 @@
 #include "irrKlang.h"
 #include "Gooey.h"
 #include "WOphysx.h"
+#include "NetMessengerClient.h"
 
 
 using namespace irrklang;
@@ -41,8 +42,10 @@ public:
    virtual void onKeyUp( const SDL_KeyboardEvent& key );
    void doSound();
    void soundUpdate();
-   void ballUpdate();
-   void keyUpdate();
+   void ballUpdate(); 
+    void keyUpdate(); 
+
+    void sendUpdate();
 
    WO* skybox;
    WO* table;
@@ -82,6 +85,8 @@ public:
     physx::PxScene* scene;
 
     WOphysx* ball;
+
+    NetMessengerClient* client;
 
 protected:
    GLViewFinalProject( const std::vector< std::string >& args );

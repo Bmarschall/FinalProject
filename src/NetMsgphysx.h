@@ -24,8 +24,10 @@ namespace Aftr
 		virtual void onMessageArrived();
 		virtual std::string toString() const;
 
-		float pos[3];
-		float rot[3];
+		float pos[3]; // ball position
+		float rot[3]; // world rotation
+		int startGame;
+		std::string winner;
 		const int size = 3;
 	protected:
 
