@@ -239,7 +239,7 @@ void Aftr::GLViewFinalProject::loadMap(){
 
    //SkyBox Textures readily available
    std::vector< std::string > skyBoxImageNames; //vector to store texture paths
-   skyBoxImageNames.push_back(ManagerEnvironmentConfiguration::getLMM() + "skyboxes/room.jpg");
+   skyBoxImageNames.push_back(ManagerEnvironmentConfiguration::getLMM() + "skyboxes/room2.jpg");
 
    {
       //Create the SkyBox
