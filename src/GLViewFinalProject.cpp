@@ -317,10 +317,14 @@ void Aftr::GLViewFinalProject::loadMap(){
 
 void GLViewFinalProject::sendUpdate() {
     {
-        NetMsgphysx msg;
-        msg.pos[0] = ball->getPosition().x;
-        msg.pos[1] = ball->getPosition().y;
-        msg.pos[2] = ball->getPosition().z;
+        NetMsgphysx msg(&wPressed, &aPressed, &sPressed, &dPressed);
+        msg.wPressed = wPressed;
+        msg.aPressed = aPressed;
+        msg.dPressed = dPressed;
+        msg.sPressed = sPressed;
+        msg.pos[0] = ball->getPosition()[0];
+        msg.pos[1] = ball->getPosition()[1];
+        msg.pos[2] = ball->getPosition()[2];
         msg.rot[0] = pitchX;
         msg.rot[1] = pitchY;
         msg.rot[2] = pitchZ;

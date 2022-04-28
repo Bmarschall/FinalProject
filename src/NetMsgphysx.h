@@ -18,11 +18,17 @@ namespace Aftr
 		NetMsgMacroDeclaration(NetMsgphysx);
 
 		NetMsgphysx();
+		NetMsgphysx(bool* w, bool* a, bool* s, bool* d);
 		virtual ~NetMsgphysx();
 		virtual bool toStream(NetMessengerStreamBuffer& os) const;
 		virtual bool fromStream(NetMessengerStreamBuffer& is);
 		virtual void onMessageArrived();
 		virtual std::string toString() const;
+
+		int wPressed = 0;
+		int aPressed = 0;
+		int sPressed = 0;
+		int dPressed = 0;
 
 		float pos[3]; // ball position
 		float rot[3]; // world rotation
