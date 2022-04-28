@@ -106,7 +106,7 @@ void GLViewFinalProject::updateWorld() {
    soundUpdate();
    ballUpdate();
    keyUpdate();
-   sendUpdate();
+   sendUpdate(); // net msg update
 
    this->cam->setPosition(0, 60, 130);
    this->cam->setCameraLookAtPoint(ball->getPosition());
@@ -208,7 +208,7 @@ void Aftr::GLViewFinalProject::loadMap(){
    ManagerOpenGLState::GL_CLIPPING_PLANE = 1000.0;
    ManagerOpenGLState::GL_NEAR_PLANE = 0.1f;
    ManagerOpenGLState::enableFrustumCulling = false;
-   Axes::isVisible = true;
+   Axes::isVisible = false;
    this->glRenderer->isUsingShadowMapping( false ); //set to TRUE to enable shadow mapping, must be using GL 3.2+
 
    this->cam->setPosition( 0, 60, 130);
@@ -217,7 +217,7 @@ void Aftr::GLViewFinalProject::loadMap(){
    std::string shinyRedPlasticCube( ManagerEnvironmentConfiguration::getSMM() + "/models/cube4x4x4redShinyPlastic_pp.wrl" );
    std::string sphere(ManagerEnvironmentConfiguration::getSMM() + "/models/sphereR5Earth.wrl");
    std::string wheeledCar( ManagerEnvironmentConfiguration::getSMM() + "/models/rcx_treads.wrl" );
-   std::string grass( ManagerEnvironmentConfiguration::getSMM() + "/models/grassFloor400x400_pp.wrl" );
+   std::string grass( ManagerEnvironmentConfiguration::getLMM() + "/models/grassFloor400x400_pp.wrl" );
    std::string human( ManagerEnvironmentConfiguration::getSMM() + "/models/human_chest.wrl" );
    std::string maze(ManagerEnvironmentConfiguration::getLMM() + "/models/maze.stl");
 
@@ -257,8 +257,18 @@ void Aftr::GLViewFinalProject::loadMap(){
       wo->setPosition( Vector( 0, 0, 0 ) );
       wo->renderOrderType = RENDER_ORDER_TYPE::roOPAQUE;
 
-      wo->upon_async_model_loaded( [wo]() {            
+      wo->upon_async_model_loaded( [wo]() {     
+ /*           std::string path = ManagerEnvironmentConfiguration::getLMM() + "models/table.jpg";
+            ModelMeshSkin tableSkin(ManagerTexture::loadTexture(path));
+            tableSkin.setMeshShadingType(MESH_SHADING_TYPE::mstFLAT);
+            std::vector<Aftr::ModelMeshSkin> skins = wo->getModel()->getSkins();
+            skins.push_back(tableSkin);
+            std::swap(skins[0], skins[skins.size() - 1]);*/
+
+            //std::replace(skins.begin(), skins.end(), skins.at(0), tableSkin);
+
             ModelMeshSkin& tableSkin = wo->getModel()->getModelDataShared()->getModelMeshes().at(0)->getSkins().at(0);
+            
             tableSkin.getMultiTextureSet().at( 0 )->setTextureRepeats( 5.0f );
             tableSkin.setAmbient( aftrColor4f( 0.4f, 0.4f, 0.4f, 1.0f ) ); //Color of object when it is not in any light
             tableSkin.setDiffuse( aftrColor4f( 1.0f, 1.0f, 1.0f, 1.0f ) ); //Diffuse color components (ie, matte shading color of this object)
