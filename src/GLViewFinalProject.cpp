@@ -38,6 +38,7 @@
 #include "irrKlang.h"
 #include "Gooey.h"
 #include "Model.h"
+#include "NetMsgphysx.h"
 
 using namespace std;
 
@@ -105,6 +106,7 @@ void GLViewFinalProject::updateWorld() {
    soundUpdate();
    ballUpdate();
    keyUpdate();
+   sendUpdate();
 
    this->cam->setPosition(0, 60, 130);
    this->cam->setCameraLookAtPoint(ball->getPosition());
@@ -197,6 +199,8 @@ void GLViewFinalProject::onKeyDown( const SDL_KeyboardEvent& key ){
 }
 
 void Aftr::GLViewFinalProject::loadMap(){
+    client = NetMessengerClient::New("127.0.0.1", "12683");
+
    this->worldLst = new WorldList(); //WorldList is a 'smart' vector that is used to store WO*'s
    this->actorLst = new WorldList();
    this->netLst = new WorldList();
@@ -253,25 +257,20 @@ void Aftr::GLViewFinalProject::loadMap(){
       wo->setPosition( Vector( 0, 0, 0 ) );
       wo->renderOrderType = RENDER_ORDER_TYPE::roOPAQUE;
 
-      wo->upon_async_model_loaded( [wo]()
-         {            
+      wo->upon_async_model_loaded( [wo]() {            
             ModelMeshSkin& tableSkin = wo->getModel()->getModelDataShared()->getModelMeshes().at(0)->getSkins().at(0);
             tableSkin.getMultiTextureSet().at( 0 )->setTextureRepeats( 5.0f );
             tableSkin.setAmbient( aftrColor4f( 0.4f, 0.4f, 0.4f, 1.0f ) ); //Color of object when it is not in any light
             tableSkin.setDiffuse( aftrColor4f( 1.0f, 1.0f, 1.0f, 1.0f ) ); //Diffuse color components (ie, matte shading color of this object)
             tableSkin.setSpecular( aftrColor4f( 0.4f, 0.4f, 0.4f, 1.0f ) ); //Specular color component (ie, how "shiney" it is)
             tableSkin.setSpecularCoefficient( 10 ); // How "sharp" are the specular highlights (bigger is sharper, 1000 is very sharp, 10 is very dull) 
-            tableSkin.setMeshShadingType(MESH_SHADING_TYPE::mstFLAT);
-            //wo->getModel()->getSkins().push_back(tableSkin);
-
-            
-          } );
+            tableSkin.setMeshShadingType(MESH_SHADING_TYPE::mstFLAT);           
+       } );
       wo->setLabel( "Table" );
       worldLst->push_back( wo );
 
       this->table = wo;
    }
-
 
    {
       // maze object
@@ -298,12 +297,6 @@ void Aftr::GLViewFinalProject::loadMap(){
        //std::cout << "BALL INFO SIZE = " << ball->getModel()->getModelDataShared()->getCompositeVertexList().size() << std::endl;
        worldLst->push_back(ball);
    }
-   {
-       ////Create A Physics Plane
-       //physx::PxMaterial* gMaterial = p->createMaterial(0.5f, 0.5f, 0.6f);
-       //PxRigidStatic* groundPlane = PxCreatePlane(*p, PxPlane(0, 0, 1, 0), *gMaterial);
-       //scene->addActor(*groundPlane);
-   }
    
    Gooey* goo = Gooey::New(nullptr);
    goo->setLabel("Goo");
@@ -322,6 +315,24 @@ void Aftr::GLViewFinalProject::loadMap(){
    createFinalProjectWayPoints();
 }
 
+void GLViewFinalProject::sendUpdate() {
+    {
+        NetMsgphysx msg(&wPressed, &aPressed, &sPressed, &dPressed);
+        msg.wPressed = wPressed;
+        msg.aPressed = aPressed;
+        msg.dPressed = dPressed;
+        msg.sPressed = sPressed;
+        msg.pos[0] = ball->getPosition()[0];
+        msg.pos[1] = ball->getPosition()[1];
+        msg.pos[2] = ball->getPosition()[2];
+        msg.rot[0] = pitchX;
+        msg.rot[1] = pitchY;
+        msg.rot[2] = pitchZ;
+        msg.startGame = gui->gameStarted;
+        msg.winner = gui->winner;
+        client->sendNetMsgSynchronousTCP(msg);
+    }
+}
 
 
 void GLViewFinalProject::createFinalProjectWayPoints(){
