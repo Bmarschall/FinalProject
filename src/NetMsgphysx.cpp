@@ -67,13 +67,8 @@ bool NetMsgphysx::toStream(NetMessengerStreamBuffer& os) const {
 	for (int i = 0; i < 3; i++){
 		os << this->pos[i];
 		os << this->rot[i];
-<<<<<<< Updated upstream
 		os << this->startGame;
 		os << this->winner;
-=======
-
-		//os << this->grav[i];
->>>>>>> Stashed changes
 	}
 	return true;
 }
