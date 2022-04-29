@@ -317,17 +317,26 @@ void Aftr::GLViewFinalProject::loadMap(){
 
 void GLViewFinalProject::sendUpdate() {
     {
-        NetMsgphysx msg(&wPressed, &aPressed, &sPressed, &dPressed);
-        msg.wPressed = wPressed;
-        msg.aPressed = aPressed;
-        msg.dPressed = dPressed;
-        msg.sPressed = sPressed;
+
+
+
+        NetMsgphysx msg;
         msg.pos[0] = ball->getPosition()[0];
         msg.pos[1] = ball->getPosition()[1];
         msg.pos[2] = ball->getPosition()[2];
         msg.rot[0] = pitchX;
         msg.rot[1] = pitchY;
         msg.rot[2] = pitchZ;
+
+        /*msg.grav[0] = gui->XGravity;
+        msg.grav[1] = gui->YGravity;
+        msg.grav[2] = gui->Gravity;*/
+
+        msg.pressed[0] = this->wPressed;
+        msg.pressed[1] = this->aPressed;
+        msg.pressed[2] = this->sPressed;
+        msg.pressed[3] = this->dPressed;
+
         msg.startGame = gui->gameStarted;
         msg.winner = gui->winner;
         client->sendNetMsgSynchronousTCP(msg);
@@ -376,7 +385,7 @@ void GLViewFinalProject::soundUpdate() {
 
     threeDimSound->setPosition(cubePosition);
 
-    gui->volume3 = 1 / (ball->getForce());
+    //gui->volume3 = 1 / (ball->getForce());
 
     if (gui->is3d) {
         threeDimSound->setIsPaused(false);
